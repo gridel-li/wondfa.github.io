@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="低端码农技术整理，如有疑问欢迎大佬指正，联系邮箱78606393@qq.com"><title>框架相关面试 | 二开的博客</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">框架相关面试</h1><a id="logo" href="/.">二开的博客</a><p class="description">二营长等你很久了！</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">框架相关面试</h1><div class="post-meta">Mar 25, 2019<span> | </span><span class="category"><a href="/categories/面试/">面试</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-JDBC编程有什么不足？mybatis是如何解决的？"><span class="toc-number">1.</span> <span class="toc-text">1. JDBC编程有什么不足？mybatis是如何解决的？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-mybatis编程步骤是怎样的？"><span class="toc-number">2.</span> <span class="toc-text">2. mybatis编程步骤是怎样的？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-Mybatis中-和-的区别？"><span class="toc-number">3.</span> <span class="toc-text">3. Mybatis中#和$的区别？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-使用MyBatis的mapper接口调用时有哪些要求？"><span class="toc-number">4.</span> <span class="toc-text">4. 使用MyBatis的mapper接口调用时有哪些要求？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-谈谈mybatis中的一级缓存和二级缓存。"><span class="toc-number">5.</span> <span class="toc-text">5. 谈谈mybatis中的一级缓存和二级缓存。</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6-在进行插入操作时如何回传ID？"><span class="toc-number">6.</span> <span class="toc-text">6. 在进行插入操作时如何回传ID？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-mapper接口工作原理是什么？"><span class="toc-number">7.</span> <span class="toc-text">7. mapper接口工作原理是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#8-mapper接口里的方法可以重载吗？为什么？"><span class="toc-number">8.</span> <span class="toc-text">8. mapper接口里的方法可以重载吗？为什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#9-你了解mybatis的动态SQL吗？"><span class="toc-number">9.</span> <span class="toc-text">9. 你了解mybatis的动态SQL吗？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#10-Mybatis是否支持延迟加载？如果支持，它的实现原理是什么？"><span class="toc-number">10.</span> <span class="toc-text">10. Mybatis是否支持延迟加载？如果支持，它的实现原理是什么？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#四-、hibernate"><span class="toc-number">11.</span> <span class="toc-text">(四)、hibernate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#五-、Redis"><span class="toc-number">12.</span> <span class="toc-text">(五)、Redis</span></a></li></ol></div></div><div class="post-content"><h4 id="1-JDBC编程有什么不足？mybatis是如何解决的？"><a href="#1-JDBC编程有什么不足？mybatis是如何解决的？" class="headerlink" title="1. JDBC编程有什么不足？mybatis是如何解决的？"></a>1. JDBC编程有什么不足？mybatis是如何解决的？</h4><p>主要有以下几个方面：</p>
+<ul>
+<li>JDBC中数据库连接创建、释放频繁造成系统资源浪费从而影响系统性能  mybatis解决：在mybatis配置文件中配置数据连接池，使用连接池管理数据库连接。</li>
+<li>Sql语句写在代码中造成代码不易维护，实际应用sql变化的可能较大，sql变动需要改变java代码。  mybatis解决：将Sql语句配置在mapper.xml文件中，与java代码分离。</li>
+<li>向 sql 语句传参数麻烦，因为 sql 语句的 where 条件不一定，可能多也可能少，占位符需要和参数一一对应。  mybatis解决： Mybatis自动将java对象映射至sql语句。</li>
+<li>对结果集解析麻烦，sql变化导致解析代码变化，且解析前需要遍历。  mybatis解决：Mybatis自动将sql执行结果映射至java对象。</li>
+</ul>
+<h4 id="2-mybatis编程步骤是怎样的？"><a href="#2-mybatis编程步骤是怎样的？" class="headerlink" title="2. mybatis编程步骤是怎样的？"></a>2. mybatis编程步骤是怎样的？</h4><p>步骤如下：</p>
+<ul>
+<li>创建SqlSessionFactory</li>
+<li>通过SqlSessionFactory创建 SqlSession</li>
+<li>通过sqlsession执行数据库操作</li>
+<li>调用session.commit()提交事务</li>
+<li>调用session.close()关闭会话</li>
+</ul>
+<h4 id="3-Mybatis中-和-的区别？"><a href="#3-Mybatis中-和-的区别？" class="headerlink" title="3. Mybatis中#和$的区别？"></a>3. Mybatis中#和$的区别？</h4><p> 使用${参数}就是单纯的字符串拼接，拼接完成后才会对SQL进行编译、执行，所以性能较低；#{参数名}在SQL中相当于一个参数占位符“?”，用来补全预编译语句，所有这种方式可以防止SQL注入，它补全预编译语句时，会在此参数值两端加了单引号。但是有些地方必须要用$，比如参数是表名的时候：${表名}，因为如果使用#，sql语句就会变成 ‘表名’，会加上单引号，这样就找不到该表。总之，能用#就不要用$。</p>
+<h4 id="4-使用MyBatis的mapper接口调用时有哪些要求？"><a href="#4-使用MyBatis的mapper接口调用时有哪些要求？" class="headerlink" title="4. 使用MyBatis的mapper接口调用时有哪些要求？"></a>4. 使用MyBatis的mapper接口调用时有哪些要求？</h4><p>有以下规则：</p>
+<ul>
+<li>Mapper接口方法名和mapper.xml中对应的sql的id相同 ；</li>
+<li>Mapper接口方法的输入参数类型和mapper.xml中对应的sql 的parameterType的类型相同 ；</li>
+<li>Mapper接口方法的输出参数类型和mapper.xml中对应的sql的resultType的类型相同 ；</li>
+<li>Mapper.xml文件中的namespace即是mapper接口的类路径。</li>
+</ul>
+<h4 id="5-谈谈mybatis中的一级缓存和二级缓存。"><a href="#5-谈谈mybatis中的一级缓存和二级缓存。" class="headerlink" title="5. 谈谈mybatis中的一级缓存和二级缓存。"></a>5. 谈谈mybatis中的一级缓存和二级缓存。</h4><p>一级缓存: 基于 PerpetualCache 的 HashMap 本地缓存，其存储作用域为 Session，当 Session flush 或 close 之后，该Session中的所有 Cache 就将清空。</p>
+<ul>
+<li>二级缓存与一级缓存其机制相同，默认也是采用 PerpetualCache，HashMap存储，不同在于其存储作用域为 Mapper(Namespace)，即对该namespance对应的配置文件中所有的select操作结果都缓存，这样不同线程之间就可以共用二级缓存。并且可自定义存储源，如 Ehcache。启动二级缓存：在mapper配置文件中加上：<cache>。</cache></li>
+</ul>
+<h4 id="6-在进行插入操作时如何回传ID？"><a href="#6-在进行插入操作时如何回传ID？" class="headerlink" title="6. 在进行插入操作时如何回传ID？"></a>6. 在进行插入操作时如何回传ID？</h4><p>在insert标签中配置如下属性即可：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;insert id=<span class="string">"insert"</span> parameterType=<span class="string">"com.test.User"</span> keyProperty=<span class="string">"userId"</span> useGeneratedKeys=<span class="string">"true"</span> &gt; </span><br><span class="line">   ......</span><br><span class="line">&lt;<span class="regexp">/insert&gt;</span></span><br></pre></td></tr></table></figure>
+<p>用keyProperty指定Id属性，把useGeneratedKeys设置为true即可。</p>
+<h4 id="7-mapper接口工作原理是什么？"><a href="#7-mapper接口工作原理是什么？" class="headerlink" title="7. mapper接口工作原理是什么？"></a>7. mapper接口工作原理是什么？</h4><p>mapper接口的工作原理是JDK动态代理，Mybatis运行时会使用JDK动态代理为mapper接口生成代理对象，代理对象会拦截接口方法，转而执行对应的sql，然后将sql执行结果返回。</p>
+<h4 id="8-mapper接口里的方法可以重载吗？为什么？"><a href="#8-mapper接口里的方法可以重载吗？为什么？" class="headerlink" title="8. mapper接口里的方法可以重载吗？为什么？"></a>8. mapper接口里的方法可以重载吗？为什么？</h4><p>不能重载。对应的xml映射文件是根据方法名将方法与sql语句绑定的，如果重载，将无法区分绑定哪个方法。</p>
+<h4 id="9-你了解mybatis的动态SQL吗？"><a href="#9-你了解mybatis的动态SQL吗？" class="headerlink" title="9. 你了解mybatis的动态SQL吗？"></a>9. 你了解mybatis的动态SQL吗？</h4><p>动态SQL可以完成逻辑判断和动态拼接sql的功能。在mybatis的xml映射文件中，我们可以标签的形式编写动态sql。常用的动态sql标签有<if>、<where>、<set>等。</set></where></if></p>
+<h4 id="10-Mybatis是否支持延迟加载？如果支持，它的实现原理是什么？"><a href="#10-Mybatis是否支持延迟加载？如果支持，它的实现原理是什么？" class="headerlink" title="10. Mybatis是否支持延迟加载？如果支持，它的实现原理是什么？"></a>10. Mybatis是否支持延迟加载？如果支持，它的实现原理是什么？</h4><p>Mybatis仅支持association关联对象和collection关联集合对象的延迟加载，association指的就是一对一，collection指的就是一对多查询。在Mybatis配置文件中，可以配置<code>lazyLoadingEnabled=true</code>来启用延迟加载。它的原理是使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
+<h4 id="四-、hibernate"><a href="#四-、hibernate" class="headerlink" title="(四)、hibernate"></a>(四)、hibernate</h4><p><strong>1. 简单的说一下hibernate的开发流程。</strong>  <strong>答：</strong>步骤如下：</p>
+<ul>
+<li>加载 hibernate 的配置文件，读取其他配置文件(jdbc.properties、表与对象关系映射文件);</li>
+<li>创建 SessionFactory 会话工厂;</li>
+<li>打开 session 获取连接，构造 session 对象(一次会话维持一个数据连接，也是一级缓存)</li>
+<li>开启事务;</li>
+<li>使用session进行操作 ；</li>
+<li>提交事务；</li>
+<li>关闭session；</li>
+<li>关闭SessionFactory 。</li>
+</ul>
+<p><strong>2. 说说hibernate中对象的三种状态。</strong>  <strong>答：</strong>hibernate中，对象有以下3种状态：</p>
+<ul>
+<li>临时态：直接new出来的对象，不处于session的管理，数据库中没有对象的记录；调用save方法后就变成持久态。</li>
+<li>持久态：当调用session的save/saveOrUpdate/get/load/list等方法的时候，对象就是持久化状态。处于session的管理，数据库中有对应的记录；调用delete方法后变成临时态，调用session.close()后就变成了游离态。</li>
+<li>游离态：Session关闭后，对象的状态就是游离态。不处于session的管理，数据库中有对应的记录；调用update方法后又变成持久态。</li>
+</ul>
+<p><strong>3. 你知道hibernate的缓存吗？</strong>  <strong>答：</strong>使用缓存的目的就是减少对数据库的访问次数，以提高hibernate的执行效率。hibernate有一级缓存和二级缓存之分：</p>
+<ul>
+<li>一级缓存：也叫做session的缓存，它可以在session范围内减少数据库的访问次数，只在session范围有效，Session关闭，一级缓存失效，不同的session不会共享缓存数据。当调用session的 save/saveOrUpdate/get/load/list/iterator 方法的时候，都会把对象放入session的缓存中。 Session的缓存由hibernate维护， 用户不能操作缓存内容； 如果想操作缓存内容，必须通过hibernate提供的evit/clear方法操作。</li>
+<li>二级缓存：Hibernate提供了基于应用程序级别的缓存， 可以跨多个session，即不同的session都可以访问缓存数据。 这个缓存也叫二级缓存。Hibernate提供的二级缓存有默认的实现，且是一种可插配的缓存框架！如果用户想用二级缓存，只需要在hibernate.cfg.xml中配置即可，不想用，直接移除配置即可。如果用户觉得hibernate提供的缓存框架不好用，可以换其他的缓存框架或自己实现缓存框架都可以。</li>
+</ul>
+<p><strong>4. hibernate有几种查询方式？</strong>  <strong>答：</strong>hibernate有3种查询方式：</p>
+<ul>
+<li>HQL查询：面向对象的查询语言,提供了丰富灵活的查询方式。例子：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> hql = <span class="string">"select userName from User"</span>; <span class="comment">// userName是实体类属性名而非表的字段名，User是实体类名</span></span><br><span class="line">Query query = session.createQuery(hql);</span><br><span class="line">List&lt;<span class="built_in">Object</span>&gt; nameList = query.list();</span><br></pre></td></tr></table></figure>
+<ul>
+<li>QBC(Query By Criteria)查询：Criteria对象提供了一种面向对象的方式查询数据库。Criteria对象需要使用Session对象来获得。例子：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Criteria c = session.createCriteria(User.class);</span><br><span class="line">c.add(Restrictions.eq(<span class="string">"userName"</span>, <span class="string">"James"</span>));</span><br><span class="line">List&lt;User&gt; userList = c.list();</span><br></pre></td></tr></table></figure>
+<ul>
+<li>原生SQL查询：就是使用原生的SQL语句进行查询。例子：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">String</span> sql = <span class="string">"select id,username,userpwd from t_user"</span>;</span><br><span class="line">List list = session.createSQLQuery(sql).list();</span><br></pre></td></tr></table></figure>
+<p><strong>5. hibernate的ORM思想你了解多少？</strong>  <strong>答：</strong>ORM 指的是对象关系映射(Object RelationShip Mapping )，指的就是实体类对象和数据库中的表关系进行一一对应，实现通过操作实体类对象来更改数据库里边的数据信息。这就是对象关系映射。hibernate框架也是一个orm框架，主要是通过主配置文件和实体类对应的映射配置文件来实现对象关系映射。</p>
+<p><strong>6. 你知道hibernate的懒加载吗？</strong>  <strong>答：</strong>通过设置lazy属性开启懒加载(hibernate3之后默认开启)。当Hibernate在查询数据的时候，数据并没有存在与内存中，当程序真正对数据的操作时，对象才存在与内存中，就实现了延迟加载，节省了服务器的内存开销，从而提高了服务器的性能。比如使用hibernate进行查询，可以使用get方法，也可以使用load方法，get方法不支持懒加载，而load方法支持。get方法会先查一级缓存，再查二级缓存，然后查数据库，如果没有找到会返回null。load方法会先查一级缓存，如果没有找到，就创建代理对象，等需要的时候去查询二级缓存和数据库。也就是说，使用load方法的时候，并不会立刻去数据库查找，等你真的要用到该对象的时候，才会去数据库查找，这就是懒加载。</p>
+<p><strong>7. hibernate和mybatis有何异同？</strong>  <strong>答：</strong>异同如下：  <strong>(1).</strong>相同点：</p>
+<ul>
+<li>Hibernate与MyBatis都是由XML配置文件生成SessionFactory，然后由SessionFactory 生成 Session，最后由 Session 来开启执行事务和 SQL 语句。其中两者的SessionFactory，Session的生命周期都是差不多的。</li>
+<li>Hibernate和MyBatis都支持JDBC和JTA事务处理。</li>
+</ul>
+<p><strong>(2).</strong>不同点：</p>
+<ul>
+<li>hibernate是全自动，而mybatis是半自动。hibernate完全可以通过对象关系模型实现对数据库的操作，会自动生成sql。而mybatis仅有基本的字段映射，对数据的操作还需要自己编写sql来实现。</li>
+<li>hibernate数据库移植性远大于mybatis。因为hibernate不需要自己编写sql语句，所有与数据库解耦；而mybatis由于需要手写sql，因此与数据库的耦合性直接取决于程序员写sql的方法，如果sql不具通用性，用了很多数据库特性的sql语句的话，移植性也会随之降低很多，成本很高。</li>
+<li>hibernate拥有完整的日志系统，mybatis则欠缺一些。hibernate日志系统非常健全，涉及广泛，而mybatis则除了基本记录功能外，功能薄弱很多。</li>
+<li>sql优化上，mybatis要比hibernate方便很多。由于mybatis的sql都是写在xml里，因此优化sql比hibernate方便很多。而hibernate的sql很多都是自动生成的，无法直接维护sql。</li>
+</ul>
+<p>总的来说，mybatis小巧灵活，易于使用，而hibernate学习成本相对较高，数据库移植性好。</p>
+<p><strong>8. 谈谈Hibernate中inverse的作用。</strong>  <strong>答：</strong>inverse属性默认是false,就是说双方都维护关联关系。 比如Student和Teacher是多对多关系，用一个中间表TeacherStudent维护。如果Student这边inverse=”true”, 那么关系就由Teacher维护，就是说当插入Student时，不会操作TeacherStudent表。只有Teacher插入或删除时才会触发对中间表的操作。所以两边都inverse=”true”是不对的，会导致任何操作都不触发对中间表的影响；当两边都inverse=”false”或默认时，会导致在中间表中插入两次关系。</p>
+<p><strong>9. Hibernate有哪些核心接口？</strong>  <strong>答：</strong>有如下核心接口：</p>
+<ul>
+<li>Configuration 接口：配置Hibernate，根据其启动hibernate，创建SessionFactory 对象；</li>
+<li>SessionFactory 接口：初始化Hibernate，充当数据存储源的代理，创建session 对象，sessionFactory 是线程安全的，意味着它的同一个实例多个线程共享；</li>
+<li>Session 接口：负责保存、更新、删除、加载和查询对象，是线程不安全的， 避免多个线程共享同一个session；</li>
+<li>Transaction 接口：管理事务；</li>
+<li>Query 和Criteria 接口：执行数据库的查询。</li>
+</ul>
+<h4 id="五-、Redis"><a href="#五-、Redis" class="headerlink" title="(五)、Redis"></a>(五)、<a href="https://cloud.tencent.com/product/crs" target="_blank" rel="noopener">Redis</a></h4><p><strong>1. 什么是redis？</strong>  <strong>答：</strong>redis是使用C语言编写的典型的NoSQL数据库，它是一个key-value存储系统，数据存储在内存中，所以存取速度非常快。</p>
+<p><strong>2. 为什么redis要把数据放到内存中？</strong>  <strong>答：</strong>Redis为了达到最快的读写速度将数据都读到内存中，并定期将数据写入磁盘。如果不将数据放在磁盘中，会严重影响 redis 的性能。</p>
+<p><strong>3. redis支持哪些数据类型？</strong>  <strong>答：</strong>redis有5种基本数据类型，分别是String(字符串)、Hash(字典)、List(列表)、Set(集合)、Zset(有序集合)。</p>
+<p><strong>4. 说说redis的优缺点。</strong>  <strong>答：</strong>优缺点如下：  <strong>(1).</strong> 优点：</p>
+<ul>
+<li>由于是基于内存的，所以性能极高。</li>
+<li>支持丰富的数据类型。</li>
+<li>Redis 的所有操作都是原子性的。</li>
+</ul>
+<p><strong>(2).</strong> 缺点：</p>
+<ul>
+<li>由于是内存数据库，所以单台机器存储的数据量，跟机器本身的内存大小。</li>
+<li>如果进行完整重同步，由于需要生成 rdb 文件并进行传输，会占用主机的 CPU，消耗带宽。</li>
+</ul>
+</div><iframe src="/donate/?AliPayQR=/img/al.png&amp;WeChatQR=/img/wx.png&amp;GitHub=null&amp;BTCQR=null&amp;BTCKEY=null&amp;PayPal=null" style="overflow-x:hidden; overflow-y:hidden; border:0xp none #fff; min-height:240px; width:100%;" frameborder="0" scrolling="no"></iframe><div class="tags"><a href="/tags/面试/">面试</a></div><div class="post-nav"><a class="pre" href="/2019/03/26/java反射/">java反射</a><a class="next" href="/2019/03/25/spring容器启动的加载过程/">spring容器启动的加载过程</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"><div id="local-search-result"></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java基础/">Java基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/小技能/">小技能</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/环境搭建/">环境搭建</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/破解/">破解</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/">面试</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Auto-js/" style="font-size: 15px;">Auto.js</a> <a href="/tags/环境搭建/" style="font-size: 15px;">环境搭建</a> <a href="/tags/EFK/" style="font-size: 15px;">EFK</a> <a href="/tags/ElasticSearch/" style="font-size: 15px;">ElasticSearch</a> <a href="/tags/SpringBoot/" style="font-size: 15px;">SpringBoot</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/面试/" style="font-size: 15px;">面试</a> <a href="/tags/资源-软件破解/" style="font-size: 15px;">资源-软件破解</a> <a href="/tags/Nginx/" style="font-size: 15px;">Nginx</a> <a href="/tags/Java基础/" style="font-size: 15px;">Java基础</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/pinpoint/" style="font-size: 15px;">pinpoint</a> <a href="/tags/Spring/" style="font-size: 15px;">Spring</a> <a href="/tags/springboot/" style="font-size: 15px;">springboot</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/01/21/一键部署springboot项目到docker/">一键部署springboot项目到docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/17/VMware安装黑苹果踩坑/">VMware安装黑苹果踩坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/19/Java基础整理/">Java基础整理</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/16/Navicat-12激活/">Navicat 12激活</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/06/SpringBoot学习-03-在IDEA上本地更新远程项目/">SpringBoot学习-03.在IDEA上本地更新远程项目</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/05/ThreadLocal理解/">ThreadLocal理解</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/05/SpringBoot学习-02-在IDEA上实现项目的远程调试/">SpringBoot学习-02.在IDEA上实现项目的远程调试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/05/SpringBoot学习-01-实现微信接入/">SpringBoot学习-01.实现微信接入</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/03/Auto-js学习/">Auto.js学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/02/文件对比神器Beyond-Compare4/">文件对比神器Beyond Compare4</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">二开的博客.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/search.js?v=0.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+   search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="低端码农技术整理，如有疑问欢迎大佬指正，联系邮箱78606393@qq.com"><title>pinpoint搭建流程 | 二开的博客</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">pinpoint搭建流程</h1><a id="logo" href="/.">二开的博客</a><p class="description">二营长等你很久了！</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">pinpoint搭建流程</h1><div class="post-meta">Mar 12, 2019<span> | </span><span class="category"><a href="/categories/环境搭建/">环境搭建</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-介绍"><span class="toc-number">1.</span> <span class="toc-text">1.介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-环境准备"><span class="toc-number">2.</span> <span class="toc-text">2.环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-开始搭建"><span class="toc-number">3.</span> <span class="toc-text">3.开始搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1、jdk配置"><span class="toc-number">3.1.</span> <span class="toc-text">1、jdk配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2、hbase-配置"><span class="toc-number">3.2.</span> <span class="toc-text">2、hbase 配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3、pinpoint-collector部署："><span class="toc-number">3.3.</span> <span class="toc-text">3、pinpoint-collector部署：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4、pinpoint-web部署"><span class="toc-number">3.4.</span> <span class="toc-text">4、pinpoint-web部署</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5、pinpoint-agent部署"><span class="toc-number">3.5.</span> <span class="toc-text">5、pinpoint-agent部署</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#6、web服务器监控配置"><span class="toc-number">3.6.</span> <span class="toc-text">6、web服务器监控配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7、启动collector和web-ui"><span class="toc-number">3.7.</span> <span class="toc-text">7、启动collector和web ui</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-进行测试"><span class="toc-number">4.</span> <span class="toc-text">4.进行测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-支持的组件"><span class="toc-number">5.</span> <span class="toc-text">5.支持的组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-使用说明"><span class="toc-number">6.</span> <span class="toc-text">6.使用说明</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-查看调用关系"><span class="toc-number">6.1.</span> <span class="toc-text">1.查看调用关系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-查看调用链"><span class="toc-number">6.2.</span> <span class="toc-text">2.查看调用链</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-查看错误信息"><span class="toc-number">6.3.</span> <span class="toc-text">3.查看错误信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-查看应用情况"><span class="toc-number">6.4.</span> <span class="toc-text">4.查看应用情况</span></a></li></ol></li></ol></div></div><div class="post-content"><h3 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h3><p>​    pinpoint是开源在github上的一款APM监控工具，它是用Java编写的，用于大规模分布式系统监控。它对性能的影响最小（只增加约3％资源利用率），安装agent是无侵入式的，只需要在被测试的Tomcat中加上3句话，打下探针，就可以监控整套程序了。因需求要获取阿里云专有云组件之间的联系，了解到了这个开源项目。我们知道,前端向后台发起一个查询请求，后台服务可能要调用多个服务，每个服务可能又会调用其它服务，最终将结果返回，汇总到页面上。如果某个环节发生异常，工程师很难准确定位这个问题到底是由哪个服务调用造成的，Pinpoint等相关工具的作用就是<strong>追踪每个请求的完整调用链路，收集调用链路上每个服务的性能数据</strong>，方便工程师能够快速定位问题。</p>
+<p>​    这个是一个Pinpoint框架结构图 emm。。。看了概述之后这个图还算比较直观 大概意思就是探针agent通过jvm收集应用端监控数据，反馈给collector，collector属于数据收集模块，接收Agent发送过来的监控数据，并存储到HBase，再通过Web UI 监控展示模块，展示系统调用关系、调用详情、应用状态等，并支持报警等功能。</p>
+<p>架构说明：</p>
+<ul>
+<li>Pinpoint-Collector：收集各种性能数据</li>
+<li>Pinpoint-Agent：和自己运行的应用关联起来的探针</li>
+<li>Pinpoint-Web：将收集到的数据显示成WEB网页形式</li>
+<li>HBase Storage：收集到的数据存到HBase中</li>
+</ul>
+<p><img src="/2019/03/12/pinpoint搭建流程/626593-20161127170110237-2102871440.png" alt="img"></p>
+<h3 id="2-环境准备"><a href="#2-环境准备" class="headerlink" title="2.环境准备"></a>2.环境准备</h3><p>由于搭建pinpoint需要hbase和使用tomcat等相关测试，所以内存使用比较费，手头没有合适的资源，开了个虚拟机整一个单机环境进行测试和部署。4核8g </p>
+<p><strong>jdk1.8</strong><a href="https://www.oracle.com/technetwork/java/javase/documentation/jdk8-doc-downloads-2133158.html" target="_blank" rel="noopener">https://www.oracle.com/technetwork/java/javase/documentation/jdk8-doc-downloads-2133158.html</a></p>
+<p><strong>hbase</strong> 此处下载的是hbase-1.2.9-bin.tar.gz <a href="http://archive.apache.org/dist/hbase/" target="_blank" rel="noopener">http://archive.apache.org/dist/hbase/</a></p>
+<p>注意：如果是windows环境下部署，由于Hbase构建在Hadoop HDFS（即Hadoop分布式文件系统 Hadoop Distributed Filesystem）之上，因此Hbase需要Hadoop的支持。刚开始是在windows环境搭建的，那会儿时间比较紧，没来得及整理，反正工具就是这些，如有需要可以再翻阅一下其他的文章。</p>
+<p><strong>Hadoop</strong>  支持文件<a href="https://github.com/srccodes/hadoop-common-2.2.0-bin" target="_blank" rel="noopener">https://github.com/srccodes/hadoop-common-2.2.0-bin</a> </p>
+<p><strong>pinpoint</strong> github地址<a href="https://github.com/naver/pinpoint" target="_blank" rel="noopener">https://github.com/naver/pinpoint</a>  这里使用1.9.0最新版</p>
+<p>如果要使用源码部署</p>
+<p>下载：git clone <a href="https://github.com/naver/pinpoint.git" target="_blank" rel="noopener">https://github.com/naver/pinpoint.git</a></p>
+<p>进入Pinpoint目录后编译(实际使用中需要安装jdk6,7,8,9  也有可能是我自己没解决掉那些问题)：</p>
+<p>mvn install -Dmaven.test.skip=true 安装会需要很长时间，耐心的等一会，嗯 大概就2个小时左右吧…</p>
+<p>如果不想自己手动打包，则可以下载打包好的。<a href="https://github.com/naver/pinpoint/releases/tag/1.8.2" target="_blank" rel="noopener">https://github.com/naver/pinpoint/releases/tag/1.8.2</a></p>
+<h3 id="3-开始搭建"><a href="#3-开始搭建" class="headerlink" title="3.开始搭建"></a>3.开始搭建</h3><h4 id="1、jdk配置"><a href="#1、jdk配置" class="headerlink" title="1、jdk配置"></a>1、jdk配置</h4><p>解压之后环境变量配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/profile</span><br><span class="line"><span class="meta">#</span><span class="bash">jdk环境变量</span></span><br><span class="line">export JAVA_HOME=/root/mytools/jdk1.8.0_191</span><br><span class="line">export CLASSPATH=$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib</span><br><span class="line">export PATH=$JAVA_HOME/bin:$PATH</span><br><span class="line"></span><br><span class="line">source /etc/profile 使之生效</span><br><span class="line">java -version 验证</span><br></pre></td></tr></table></figure>
+<h4 id="2、hbase-配置"><a href="#2、hbase-配置" class="headerlink" title="2、hbase 配置"></a>2、hbase 配置</h4><p>解压后编辑：<code>conf/hbase-env.sh,</code>添加JAVA_HOME配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/root/mytools/jdk1.8.0_191</span><br></pre></td></tr></table></figure>
+<p>然后，进行下一项配置，还是在conf文件夹中，找到“hbase-site.xml”文件，编辑此文件，在configuration标签内添加如下配置：<strong>这个文件可以不配置，那么会采取默认值</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>hbase.rootdir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">value</span>&gt;</span>file:///root/mytools/hbase-1.2.9/rootdir<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>配置环境变量</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export HBASE_HOME=/root/mytools/hbase-1.2.9</span><br><span class="line">export PATH=$PATH:$HBASE_HOME/bin</span><br></pre></td></tr></table></figure>
+<p>启动hbase的时候，hbase用得是自带的zk，在hbase的配置里可见 export HBASE_MANAGES_ZK=true；</p>
+<ul>
+<li>进入hbase/bin目录启动hbase：./start-hbase.sh</li>
+<li>用<code>ps</code>命令查看Hbase是否启动成功，如果启动成功的会看到”HMaster”的进程</li>
+<li>初始化pinpoint需要的表：./hbase shell hbase-create.hbase (这里的hbase-create.hbase在源码<code>pinpoint/hbase/scripts/hbase-create.hbase</code>)</li>
+<li>访问页面测试是否成功：<a href="http://localhost:16010/master-status" target="_blank" rel="noopener">http://localhost:16010/master-status</a> ，如果成功在页面的tables标签下能看到导入的表。</li>
+<li>也可以用命令来查看是否导入表成功，进入hbase，输入”status ‘detailed’”可以查看初始化的表</li>
+</ul>
+<h4 id="3、pinpoint-collector部署："><a href="#3、pinpoint-collector部署：" class="headerlink" title="3、pinpoint-collector部署："></a>3、pinpoint-collector部署：</h4><p>　　解压apache-tomcat-8.5.34，目录重命名为tomcat-pp-col</p>
+<p>　　解压pinpoint-collector-1.9.0-SNAPSHOT.war，并将解压后目录中的META-INF、monitor和WEB-INF目录拷贝到\tomcat-pp-col\webapps\ROOT目录下，覆盖相关文档</p>
+<p>　　修改\tomcat-pp-col\conf目录下server.xml中相关端口后，建议在所有端口号前加1，如：18080，18443，18009</p>
+<p>　　配置完成后启动Tomcat</p>
+<h4 id="4、pinpoint-web部署"><a href="#4、pinpoint-web部署" class="headerlink" title="4、pinpoint-web部署"></a>4、pinpoint-web部署</h4><p>　　解压第二个apache-tomcat-8.5.34，目录重命名为tomcat-pp-web</p>
+<p>　　解压pinpoint-web-1.9.0-SNAPSHOT.war，并将解压后目录中的所有目录和文件等拷贝到\tomcat-pp-web\webapps\ROOT目录下，覆盖相关文档</p>
+<p>　　修改\tomcat-pp-web\conf目录下server.xml中相关端口后，建议在所有端口号前加2，如：28080，28443，28009</p>
+<p>　　配置完成后启动Tomcat</p>
+<h4 id="5、pinpoint-agent部署"><a href="#5、pinpoint-agent部署" class="headerlink" title="5、pinpoint-agent部署"></a>5、pinpoint-agent部署</h4><p>　　将pinpoint-agent压缩包pinpoint-agent-1.9.0-SNAPSHOT.tar.gz拷贝到web服务器上并解压，我顺手解压到了Web UI所在的webapps文件夹下 别的地方也可以。在解压后的pinpoint-agent目录中找到pinpoint.config文件，修改Collector server的配置参数，如果web服务和pinpoint系统部署在同一服务器上，profiler.collector.ip可设置为localhost，否则设置为profiler.collector所在服务器ip地址。配置完成后进行保存。</p>
+<h4 id="6、web服务器监控配置"><a href="#6、web服务器监控配置" class="headerlink" title="6、web服务器监控配置"></a>6、web服务器监控配置</h4><p>　　web服务器监控这里以Tomcat为例，其他类型后期讲解。</p>
+<p>　　在被监测的Tomcat目录\Tomcat\bin下找到catalina.bat文件，使用文本编译器在其中添加如下参数：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CATALINA_OPTS="$CATALINA_OPTS -javaagent:/root/mytools/tomcat-pp-web/webapps/pinpoint-agent-1.9.0-SNAPSHOT/pinpoint-bootstrap-1.9.0-SNAPSHOT.jar"</span><br><span class="line">CATALINA_OPTS="$CATALINA_OPTS -Dpinpoint.agentId=testAgent"</span><br><span class="line">CATALINA_OPTS="$CATALINA_OPTS -Dpinpoint.applicationName=test"</span><br></pre></td></tr></table></figure>
+<p>其中：</p>
+<p>-javaagent:/root/mytools/tomcat-pp-web/webapps/pinpoint-agent-1.9.0-SNAPSHOT/pinpoint-bootstrap-1.9.0-SNAPSHOT.jar #设置\pinpoint-agent目录下的pinpoint-bootstrap-1.9.0-SNAPSHOT.jar路径</p>
+<p>-Dpinpoint.agentId=testAgent #设置被监控程序名称</p>
+<p>-Dpinpoint.applicationName=test #设置采集器agent的id名称，全局唯一</p>
+<p><strong>注意 pinpoint.agentId 必须全局唯一来标识应用实例， 而所有共用相同 pinpoint.applicationName 的应用被当成单个服务的多个实例。</strong></p>
+<h4 id="7、启动collector和web-ui"><a href="#7、启动collector和web-ui" class="headerlink" title="7、启动collector和web ui"></a>7、启动collector和web ui</h4><p>保存成功后启动所有应用到的Tomcat和hbase数据库</p>
+<p>Tomcat启动成功后，在部署pinpoint-web服务器的浏览器中输入<a href="http://localhost:28080" target="_blank" rel="noopener">http://localhost:28080</a> 回车</p>
+<h3 id="4-进行测试"><a href="#4-进行测试" class="headerlink" title="4.进行测试"></a>4.进行测试</h3><p>部署好pinpoint的基础环境之后开始测试流程  </p>
+<p>测试 过程</p>
+<p>1.单应用tomcat,配置tomcat中的catalina.sh</p>
+<p>通过这种方式可以查到基础组件相关信息 如调用的mysql,redis等组件  数据同步不是很及时 </p>
+<p>2.单应用通过内部方式调用别的项目,要在多个tomcat中都配置agent探针,能够监测到内容</p>
+<p>3.前后端分离项目 ,做了一个示例是前段项目一个tomcat,后端项目一个tomcat .查看页面信息的时候可以查到内容 但是pinpoint中未显示到关联关系 有待确认pinpoint是否存在该问题</p>
+<p>4.分布式多模块项目,部署了基于springcloud的 server client ribbon组件来进行测试 这里只有配置pp-agent的pinpoint.config, RxJava、Hystrix、RestTemplate都为true的时候，pinpoint对于微服务之间的链路监控才能收集到</p>
+<h3 id="5-支持的组件"><a href="#5-支持的组件" class="headerlink" title="5.支持的组件"></a>5.支持的组件</h3><ul>
+<li>JDK 6+</li>
+<li><a href="https://github.com/naver/pinpoint/tree/master/plugins/tomcat" target="_blank" rel="noopener">Tomcat 6/7/8/9</a>, <a href="https://github.com/naver/pinpoint/tree/master/plugins/jetty" target="_blank" rel="noopener">Jetty 8/9</a>, <a href="https://github.com/naver/pinpoint/tree/master/plugins/jboss" target="_blank" rel="noopener">JBoss EAP 6/7</a>, <a href="https://github.com/naver/pinpoint/tree/master/plugins/resin" target="_blank" rel="noopener">Resin 4</a>, <a href="https://github.com/naver/pinpoint/tree/master/plugins/websphere" target="_blank" rel="noopener">Websphere 6/7/8</a>, <a href="https://github.com/naver/pinpoint/tree/master/plugins/vertx" target="_blank" rel="noopener">Vertx 3.3/3.4/3.5</a>, <a href="https://github.com/naver/pinpoint/tree/master/plugins/weblogic" target="_blank" rel="noopener">Weblogic 10/11g/12c</a>, Undertow</li>
+<li>Spring, Spring Boot (Embedded Tomcat, Jetty), Spring asynchronous communication</li>
+<li>Apache HTTP Client 3.x/4.x, JDK HttpConnector, GoogleHttpClient, OkHttpClient, NingAsyncHttpClient, Akka-http, Apache CXF</li>
+<li>Thrift Client, Thrift Service, DUBBO PROVIDER, DUBBO CONSUMER, GRPC</li>
+<li>ActiveMQ, RabbitMQ, Kafka</li>
+<li>MySQL, Oracle, MSSQL(jtds), CUBRID, POSTGRESQL, MARIA</li>
+<li>Arcus, Memcached, Redis(<a href="https://github.com/naver/pinpoint/blob/master/plugins/redis" target="_blank" rel="noopener">Jedis</a>, <a href="https://github.com/naver/pinpoint/tree/master/plugins/redis-lettuce" target="_blank" rel="noopener">Lettuce</a>), CASSANDRA, MongoDB, Hbase</li>
+<li>iBATIS, MyBatis</li>
+<li>DBCP, DBCP2, HIKARICP, DRUID</li>
+<li>gson, Jackson, Json Lib, Fastjson</li>
+<li>log4j, Logback</li>
+</ul>
+<h3 id="6-使用说明"><a href="#6-使用说明" class="headerlink" title="6.使用说明"></a>6.使用说明</h3><p>使用说明转载至：<a href="https://blog.csdn.net/xvshu/article/details/79866237" target="_blank" rel="noopener">https://blog.csdn.net/xvshu/article/details/79866237</a> </p>
+<p><img src="/2019/03/12/pinpoint搭建流程/C1552378561502.png" alt="1552378561502"></p>
+<h4 id="1-查看调用关系"><a href="#1-查看调用关系" class="headerlink" title="1.查看调用关系"></a>1.查看调用关系</h4><p>1.1 访问地址<br>1.2 选择应用</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409143955665.png" alt="img"></p>
+<p>默认两层展示</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144039303.png" alt="img"></p>
+<p>调整层级深度：</p>
+<p>示例为前端调用4层追溯，后端调用4层追溯（4层为最深层级）</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144116572.png" alt="img"></p>
+<p>结果展示：</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144150249.png" alt="img"></p>
+<p>在图片内按鼠标滚轮调整图片大小。</p>
+<p>连线上数字为调用次数</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144232732.png" alt="img"></p>
+<p>选择更多时间范围（默认最新5分钟）</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144257419.png" alt="img"></p>
+<h4 id="2-查看调用链"><a href="#2-查看调用链" class="headerlink" title="2.查看调用链"></a>2.查看调用链</h4><p>鼠标按住右键，选中图中区域，松开右键，则展示选中时间段调用层级</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144402245.png" alt="img"></p>
+<p>展示结果：</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144435711.png" alt="img"></p>
+<p>默认按耗时排序</p>
+<p>选中某一调用，展示详细调用链及耗时</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144506725.png" alt="img"></p>
+<p>选中timelinetab可查看耗时情况：</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144539835.png" alt="img"></p>
+<h4 id="3-查看错误信息"><a href="#3-查看错误信息" class="headerlink" title="3.查看错误信息"></a>3.查看错误信息</h4><p>3.1 选择错误应用</p>
+<p>机器应用抛出错误，机器应用会标红</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144622853.png" alt="img"></p>
+<p>3.2 查看详细信息<br>选中应用，去除成功多选按钮选中对勾，按住鼠标右键，选中红点范围，松开鼠标右键，即可查看详细错误信息：</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/20180409144716826.png" alt="img"></p>
+<p>结果为：</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/2018040914480155.png" alt="img"></p>
+<p>选中某次错误请求，可在详细列表内找到详细错误信息</p>
+<h4 id="4-查看应用情况"><a href="#4-查看应用情况" class="headerlink" title="4.查看应用情况"></a>4.查看应用情况</h4><p>选中某一应用<br>单击inspector</p>
+<p><img src="/2019/03/12/pinpoint搭建流程/2018040914480155-1552447999517.png" alt="img"></p>
+<p>选中某一机器id，时间段，可展示jvm详细信息</p>
+<p>其中内容包含：Jvm内存使用情况，Jvm永久带使用占用空间，Cpu使用情况，每秒处理的消息数（S标识操作系统，U标识此应用），Jvm线程情况，单请求平均响应时间等。</p>
+<p><strong>参考文章</strong></p>
+<p><a href="https://www.cnblogs.com/yyhh/p/6106472.html" target="_blank" rel="noopener">https://www.cnblogs.com/yyhh/p/6106472.html</a></p>
+<p><a href="https://blog.csdn.net/heyeqingquan/article/details/74456591" target="_blank" rel="noopener">https://blog.csdn.net/heyeqingquan/article/details/74456591</a></p>
+</div><iframe src="/donate/?AliPayQR=/img/al.png&amp;WeChatQR=/img/wx.png&amp;GitHub=null&amp;BTCQR=null&amp;BTCKEY=null&amp;PayPal=null" style="overflow-x:hidden; overflow-y:hidden; border:0xp none #fff; min-height:240px; width:100%;" frameborder="0" scrolling="no"></iframe><div class="tags"><a href="/tags/环境搭建/">环境搭建</a><a href="/tags/pinpoint/">pinpoint</a></div><div class="post-nav"><a class="pre" href="/2019/03/12/RabbitMQ面试/">RabbitMQ面试</a><a class="next" href="/2019/03/12/EFK部署-单机/">EFK部署(单机)</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"><div id="local-search-result"></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java基础/">Java基础</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/小技能/">小技能</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/环境搭建/">环境搭建</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/破解/">破解</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/面试/">面试</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Auto-js/" style="font-size: 15px;">Auto.js</a> <a href="/tags/环境搭建/" style="font-size: 15px;">环境搭建</a> <a href="/tags/EFK/" style="font-size: 15px;">EFK</a> <a href="/tags/ElasticSearch/" style="font-size: 15px;">ElasticSearch</a> <a href="/tags/SpringBoot/" style="font-size: 15px;">SpringBoot</a> <a href="/tags/Java/" style="font-size: 15px;">Java</a> <a href="/tags/面试/" style="font-size: 15px;">面试</a> <a href="/tags/资源-软件破解/" style="font-size: 15px;">资源-软件破解</a> <a href="/tags/Nginx/" style="font-size: 15px;">Nginx</a> <a href="/tags/Java基础/" style="font-size: 15px;">Java基础</a> <a href="/tags/hexo/" style="font-size: 15px;">hexo</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/pinpoint/" style="font-size: 15px;">pinpoint</a> <a href="/tags/Spring/" style="font-size: 15px;">Spring</a> <a href="/tags/springboot/" style="font-size: 15px;">springboot</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/01/21/一键部署springboot项目到docker/">一键部署springboot项目到docker</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/17/VMware安装黑苹果踩坑/">VMware安装黑苹果踩坑</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/19/Java基础整理/">Java基础整理</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/16/Navicat-12激活/">Navicat 12激活</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/06/SpringBoot学习-03-在IDEA上本地更新远程项目/">SpringBoot学习-03.在IDEA上本地更新远程项目</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/05/ThreadLocal理解/">ThreadLocal理解</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/05/SpringBoot学习-02-在IDEA上实现项目的远程调试/">SpringBoot学习-02.在IDEA上实现项目的远程调试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/05/SpringBoot学习-01-实现微信接入/">SpringBoot学习-01.实现微信接入</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/03/Auto-js学习/">Auto.js学习</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/02/文件对比神器Beyond-Compare4/">文件对比神器Beyond Compare4</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">二开的博客.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.2/jquery.fancybox.min.css"><script type="text/javascript" src="/js/search.js?v=0.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+   search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
