@@ -2,10 +2,12 @@
 title: hexo搭建
 date: 2019-03-13 10:52:45
 tags:
+  - blog
   - 环境搭建
 toc: true
 categories:
   - 环境搭建
+  - blog
 comments: true
 ---
 
@@ -478,4 +480,58 @@ git push --set-upstream origin blog_file
 ```
 
 到这里基本上就搞定了，以后再推就可以直接`git push`了，hexo的操作跟以前一样。
+
+### Gitee（码云）操作方法
+
+目前国内访问GitHub速度慢，还可能被墙，所以Gitee来构建个人博客。Gitee类似国内版的GitHub，访问速度有保证。注意：gitee绑定域名收费，和github不一样 码云需要使用Gitee Pages 服务进行手动构建。所以想绑定域名的小伙伴推荐使用github+cdn 或者coding
+
+#### 1. 创建Gitee账号
+
+到码云：[https://gitee.com/](https://links.jianshu.com/go?to=https%3A%2F%2Fgitee.com%2F) 上申请注册账号，码云类似国内版的GitHub，所以操作界面跟GitHub差不多，多了一些国产化的东西，这里不做更多介绍了，自己研究下。
+
+#### 2. 创建项目
+
+![image-20200220191924442](hexo搭建/image-20200220191924442.png)
+
+创建完成后，在项目中复制项目地址。
+
+#### 3. 在_config.yml中配置Git
+
+```go
+deploy:
+  type: git
+  repo: https://gitee.com/LeoJ/blog
+  branch: master
+```
+
+注意：冒号后面一定要有空格，否则不能正确识别。
+
+#### 4. 发布到Gitee
+
+输入命令`npm install hexo-deployer-git --save` 安装自动部署发布工具
+ 输入命令`hexo clean && hexo g && hexo d` 发布博客，首次发布需要在shell中输入账号和密码。
+
+#### 5. Gitee Pages设置 
+
+和github不一样 码云需要使用Gitee Pages 服务进行构建，在项目的服务中选择Pages选项
+
+![image-20200220192119794](hexo搭建/image-20200220192119794.png)
+
+Pages  --> 选择 master分支，点击 部署/更新
+
+![image-20200220192613029](hexo搭建/image-20200220192613029.png)
+
+部署 稍等一会儿博客就发布成功啦，访问博客地址: https://leoj.gitee.io/blog，就可预览在线博客啦！！！
+
+如果博客的样式不对，则需要在_config.yml中配置下博客地址和路径：
+
+```cpp
+url: https://leoj.gitee.io/blog
+root: /blog
+```
+
+再执行命令`hexo clean && hexo g && hexo d` 就可以了。
+
+个人博客效果参考：https://leoj.gitee.io/blog/
+
 

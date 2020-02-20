@@ -3,9 +3,11 @@ title: blog操作及具体指令
 date: 2019-03-13 10:52:45
 tags:
   - 环境搭建
+  - blog
 toc: true
 categories:
   - 环境搭建
+  - blog
 comments: true
 ---
 
