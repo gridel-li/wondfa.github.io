@@ -3,12 +3,9 @@
   <entry>
     <title>一键部署springboot项目到docker</title>
     <url>/2020/01/21/%E4%B8%80%E9%94%AE%E9%83%A8%E7%BD%B2springboot%E9%A1%B9%E7%9B%AE%E5%88%B0docker/</url>
-    <content><![CDATA[<h2 id="一键部署-Spring-Boot-到远程-Docker-容器，就是这么秀！"><a href="#一键部署-Spring-Boot-到远程-Docker-容器，就是这么秀！" class="headerlink" title="一键部署 Spring Boot 到远程 Docker 容器，就是这么秀！"></a>一键部署 Spring Boot 到远程 Docker 容器，就是这么秀！</h2><p>原创 江南一点雨 <a href="javascript:void(0" target="_blank" rel="noopener">江南一点雨</a>;) <em>2019-08-30</em></p>
-<p>不知道各位小伙伴在生产环境都是怎么部署 Spring Boot 的，打成 jar 直接一键运行？打成 war 扔到 Tomcat 容器中运行？不过据松哥了解，容器化部署应该是目前的主流方案。</p>
-<p>不同于传统的单体应用，微服务由于服务数量众多，在部署的时候出问题的可能性更大，这个时候，结合 Docker 来部署，就可以很好的解决这个问题，这也是目前使用较多的方案之一。</p>
-<p>将 Spring Boot 项目打包到 Docker 容器中部署，有很多不同的方法，今天松哥主要来和大家聊一聊如何将 Spring Boot 项目一键打包到远程 Docker 容器，然后通过运行一个镜像的方式来启动一个 Spring Boot 项目。</p>
-<p>至于其他的 Spring Boot 结合 Docker 的用法，大家不要着急，后续的文章，松哥会和大家慢慢的一一道来。</p>
-<h2 id="1-准备工作"><a href="#1-准备工作" class="headerlink" title="1.准备工作"></a>1.准备工作</h2><h3 id="1-1-准备-Docker"><a href="#1-1-准备-Docker" class="headerlink" title="1.1 准备 Docker"></a>1.1 准备 Docker</h3><p>我这里以 CentOS7 为例来给大家演示。</p>
+    <content><![CDATA[<p>本文介绍如何将 Spring Boot 项目一键打包到远程 Docker 容器，然后通过运行一个镜像的方式来启动一个 Spring Boot 项目。</p>
+<a id="more"></a>
+<h3 id="1-准备工作"><a href="#1-准备工作" class="headerlink" title="1.准备工作"></a>1.准备工作</h3><h4 id="1-1-准备-Docker"><a href="#1-1-准备-Docker" class="headerlink" title="1.1 准备 Docker"></a>1.1 准备 Docker</h4><p>我这里以 CentOS7 为例来给大家演示。</p>
 <p>首先需要在 CentOS7 上安装好 Docker，这个安装方式网上很多，我就不多说了，我自己去年写过一个 Docker 入门教程，大家可以在公众号后台回复 <code>Docker</code> 获取教程下载地址。</p>
 <p>默认情况下，Docker守护进程Unix socket（/var/run/docker.sock）来进行本地进程通信，而不会监听任何端口，因此只能在本地使用docker客户端或者使用Docker API进行操作。如果想在其他主机上操作Docker主机，就需要让Docker守护进程打开一个HTTP Socket，这样才能实现远程通信。</p>
 <p>Docker 安装成功之后，我们首先需要修改 Docker 配置，开启允许远程访问 Docker 的功能，开启方式很简单，修改 <code>/usr/lib/systemd/system/docker.service</code> 文件，加入如下内容：</p>
@@ -16,7 +13,7 @@
 <p>如下图：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/1579593305260.png" alt="1579593305260"></p>
 <p>配置完成后，保存退出，然后重启 Docker：</p>
-<figure class="highlight crmsh"><table><tr><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl <span class="literal">start</span> docker</span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">systemctl</span> <span class="string">daemon-reload</span></span><br><span class="line"><span class="attr">systemctl</span> <span class="string">start docker</span></span><br></pre></td></tr></table></figure>
 <p>Docker 重启成功之后，Docker 的准备工作就算是 OK 了。</p>
 <p>经过这里的时候我是遇到了很麻烦的问题 一直显示</p>
 <p>Cannot connect to the Docker daemon at tcp://ip:2375. Is the docker daemon running?</p>
@@ -43,17 +40,17 @@
 <p>启动指定容器：【此处使用容器别名】</p>
 <figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="attribute">curl</span> -XPOST <span class="string">"http://192.168.18.54:2375/containers/t1/start"</span></span><br></pre></td></tr></table></figure>
 <p>成功解决。</p>
-<h3 id="1-2-准备-IDEA"><a href="#1-2-准备-IDEA" class="headerlink" title="1.2 准备 IDEA"></a>1.2 准备 IDEA</h3><p>IDEA 上的准备工作，主要是安装一个 Docker 插件，点击 <code>File-&gt;Settings-&gt;Plugins-&gt;Browse Repositories</code> 如下：</p>
+<h4 id="1-2-准备-IDEA"><a href="#1-2-准备-IDEA" class="headerlink" title="1.2 准备 IDEA"></a>1.2 准备 IDEA</h4><p>IDEA 上的准备工作，主要是安装一个 Docker 插件，点击 <code>File-&gt;Settings-&gt;Plugins-&gt;Browse Repositories</code> 如下：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593368115.webp" alt="img"></p>
 <p>点击右边绿色的 Install 按钮，完成安装，安装完成之后需要重启一下 IDEA。</p>
 <p>IDEA 重启成功之后，我们依次打开 <code>File-&gt;Settings-&gt;Build,Execution,Deployment-&gt;Docker</code> ，然后配置一下 Docker 的远程连接地址：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593380622.webp" alt="img"></p>
 <p>配置一下 Docker 的地址，配置完成后，可以看到下面有一个 Connection successful 提示，这个表示 Docker 已经连接上了。</p>
 <p>如此之后，我们的准备工作就算是 OK 了。</p>
-<h2 id="2-准备项目"><a href="#2-准备项目" class="headerlink" title="2.准备项目"></a>2.准备项目</h2><p>接下来我们来创建一个简单的 Spring Boot 项目（只需要引入 <code>spring-boot-starter-web</code> 依赖即可），项目创建成功之后，我们再创建一个普通的 <code>HelloDockerController</code>，用来做测试，如下：</p>
+<h3 id="2-准备项目"><a href="#2-准备项目" class="headerlink" title="2.准备项目"></a>2.准备项目</h3><p>接下来我们来创建一个简单的 Spring Boot 项目（只需要引入 <code>spring-boot-starter-web</code> 依赖即可），项目创建成功之后，我们再创建一个普通的 <code>HelloDockerController</code>，用来做测试，如下：</p>
 <figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line">publicclass HelloDockerController &#123;</span><br><span class="line">    <span class="meta">@GetMapping(<span class="meta-string">"/hello"</span>)</span></span><br><span class="line">    <span class="keyword">public</span> String hello() &#123;</span><br><span class="line">        <span class="keyword">return</span><span class="string">"hello docker!"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这是一个很简单的接口，无需多说。</p>
-<h2 id="3-配置-Dockerfile"><a href="#3-配置-Dockerfile" class="headerlink" title="3.配置 Dockerfile"></a>3.配置 Dockerfile</h2><p>接下来，在项目的根目录下，我创建一个 Dockerfile ，作为我镜像的构建文件，具体位置如下图：</p>
+<h3 id="3-配置-Dockerfile"><a href="#3-配置-Dockerfile" class="headerlink" title="3.配置 Dockerfile"></a>3.配置 Dockerfile</h3><p>接下来，在项目的根目录下，我创建一个 Dockerfile ，作为我镜像的构建文件，具体位置如下图：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593391529.webp" alt="img"></p>
 <p>文件内容如下：</p>
 <figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> hub.c.<span class="number">163</span>.com/library/java:latest</span><br><span class="line"><span class="keyword">VOLUME</span><span class="bash"> /tmp</span></span><br><span class="line"><span class="keyword">ADD</span><span class="bash"> target/docker-0.0.1-SNAPSHOT.jar app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="bash"> [<span class="string">"java"</span>,<span class="string">"-jar"</span>,<span class="string">"/app.jar"</span>]</span></span><br></pre></td></tr></table></figure>
@@ -66,7 +63,7 @@
 <li>最后就是配置一下启动命令，由于我打包的 jar 已经成为 app.jar 了，所以启动命令也是启动 app.jar。</li>
 </ol>
 <p>这是我们配置的一个简单的 Dockerfile。</p>
-<h2 id="4-配置-Maven-插件"><a href="#4-配置-Maven-插件" class="headerlink" title="4.配置 Maven 插件"></a>4.配置 Maven 插件</h2><p>接下来在 pom.xml 文件中，添加如下插件：</p>
+<h3 id="4-配置-Maven-插件"><a href="#4-配置-Maven-插件" class="headerlink" title="4.配置 Maven 插件"></a>4.配置 Maven 插件</h3><p>接下来在 pom.xml 文件中，添加如下插件：</p>
 <figure class="highlight dust"><table><tr><td class="code"><pre><span class="line"><span class="xml"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.spotify<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>docker-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>build-image<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">phase</span>&gt;</span>package<span class="tag">&lt;/<span class="name">phase</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">goal</span>&gt;</span>build<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">dockerHost</span>&gt;</span>http://192.168.66.131:2375<span class="tag">&lt;/<span class="name">dockerHost</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">imageName</span>&gt;</span>javaboy/$</span><span class="template-variable">&#123;project.artifactId&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">imageName</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">imageTags</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">imageTag</span>&gt;</span>$</span><span class="template-variable">&#123;project.version&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">imageTag</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">imageTags</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">forceTags</span>&gt;</span>true<span class="tag">&lt;/<span class="name">forceTags</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">dockerDirectory</span>&gt;</span>$</span><span class="template-variable">&#123;project.basedir&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">dockerDirectory</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;<span class="name">resources</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;<span class="name">resource</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">targetPath</span>&gt;</span>/<span class="tag">&lt;/<span class="name">targetPath</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">directory</span>&gt;</span>$</span><span class="template-variable">&#123;project.build.directory&#125;</span><span class="xml"><span class="tag">&lt;/<span class="name">directory</span>&gt;</span></span></span><br><span class="line"><span class="xml">                <span class="tag">&lt;<span class="name">include</span>&gt;</span>$</span><span class="template-variable">&#123;project.build.finalName&#125;</span><span class="xml">.jar<span class="tag">&lt;/<span class="name">include</span>&gt;</span></span></span><br><span class="line"><span class="xml">            <span class="tag">&lt;/<span class="name">resource</span>&gt;</span></span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span></span><br><span class="line"><span class="xml">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
 <p>这个插件的配置不难理解：</p>
 <ol>
@@ -75,18 +72,18 @@
 <li>最后 resource 节点中再配置一下 jar 的位置和名称即可。</li>
 </ol>
 <p>OK，做完这些我们就算大功告成了。</p>
-<h2 id="5-打包运行"><a href="#5-打包运行" class="headerlink" title="5.打包运行"></a>5.打包运行</h2><p>接下来对项目进行打包，打包完成后，项目会自动构建成一个镜像，并且上传到 Docker 容器中，打包方式如下：</p>
+<h3 id="5-打包运行"><a href="#5-打包运行" class="headerlink" title="5.打包运行"></a>5.打包运行</h3><p>接下来对项目进行打包，打包完成后，项目会自动构建成一个镜像，并且上传到 Docker 容器中，打包方式如下：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593402473.webp" alt="img"></p>
 <p>打包过程会稍微有一点旧，因为还包含了镜像的构建，特别是第一次打包，需要下载基础镜像，会更慢一些。</p>
 <p>部分打包日志如下（项目构建过程）:</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593409895.webp" alt="img"></p>
 <p>项目打包成功之后，我们就可以在 Docker 容器中看到我们刚刚打包成的镜像了，如下：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593417899.webp" alt="img"></p>
-<h3 id="5-1-运行方式一"><a href="#5-1-运行方式一" class="headerlink" title="5.1 运行方式一"></a>5.1 运行方式一</h3><p>此时，我们可以直接在 Linux 上像创建普通容器一样创建这个镜像的容器，然后启动，执行如下命令即可：</p>
-<figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">run</span> -d <span class="comment">--name javaboy -p 8080:8080 javaboy/docker:0.0.1</span></span><br></pre></td></tr></table></figure>
+<h4 id="5-1-运行方式一"><a href="#5-1-运行方式一" class="headerlink" title="5.1 运行方式一"></a>5.1 运行方式一</h4><p>此时，我们可以直接在 Linux 上像创建普通容器一样创建这个镜像的容器，然后启动，执行如下命令即可：</p>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">docker run -d --name javaboy -p <span class="number">8080</span>:<span class="number">8080</span> javaboy/docker:<span class="number">0.0</span><span class="number">.1</span></span><br></pre></td></tr></table></figure>
 <p>启动成功之后，我们就可以访问容器中的接口了。</p>
 <p>但是这种操作显然还是有点麻烦，结合我们一开始安装的 Docker 插件，这个运行步骤还可以做进一步的简化。</p>
-<h3 id="5-2-运行方式二"><a href="#5-2-运行方式二" class="headerlink" title="5.2 运行方式二"></a>5.2 运行方式二</h3><p>大家注意，此时我们的 IDEA 中多了一个选项，就是 docker，如下：</p>
+<h4 id="5-2-运行方式二"><a href="#5-2-运行方式二" class="headerlink" title="5.2 运行方式二"></a>5.2 运行方式二</h4><p>大家注意，此时我们的 IDEA 中多了一个选项，就是 docker，如下：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593432929.webp" alt="img"></p>
 <p>点击左边的绿色启动按钮，连接上 Docker 容器，连接成功之后，我们就可以看到目前 Docker 中的所有容器和镜像了，当然也包括我们刚刚创建的 Docker 镜像，如下：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640-1579593439334.webp" alt="img"></p>
@@ -100,20 +97,20 @@
 <p>项目运行成功之后，在浏览器输入远程服务器的地址，就可以访问了：</p>
 <p><img src="/2020/01/21/一键部署springboot项目到docker/640.webp" alt="img"></p>
 <p>如此之后，我们的 Spring Boot 项目就算顺利发布到远程 Docker 容器中了。</p>
-<p>好玩吗？试试！</p>
-<p>本文案例我已经上传到 GitHub，小伙伴们可以参考：<a href="https://github.com/lenve/javaboy-code-samples" target="_blank" rel="noopener">https://github.com/lenve/javaboy-code-samples</a></p>
 ]]></content>
       <categories>
         <category>docker</category>
       </categories>
       <tags>
-        <tag>springboot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
     <title>VMware安装黑苹果踩坑</title>
     <url>/2020/01/17/VMware%E5%AE%89%E8%A3%85%E9%BB%91%E8%8B%B9%E6%9E%9C%E8%B8%A9%E5%9D%91/</url>
-    <content><![CDATA[<h3 id="VMware安装黑苹果以及踩坑记录"><a href="#VMware安装黑苹果以及踩坑记录" class="headerlink" title="VMware安装黑苹果以及踩坑记录"></a>VMware安装黑苹果以及踩坑记录</h3><h4 id="准备软件"><a href="#准备软件" class="headerlink" title="准备软件:"></a>准备软件:</h4><p><strong>VMware14或者15 自行下载 </strong></p>
+    <content><![CDATA[<p><strong>VMware安装黑苹果以及踩坑记录</strong></p>
+<a id="more"></a>
+<h4 id="准备软件"><a href="#准备软件" class="headerlink" title="准备软件:"></a>准备软件:</h4><p><strong>VMware14或者15 自行下载 </strong></p>
 <p><strong>MacOS Unlocker for VMware</strong>, 简称 Unlocker。能够让 VMware 选择 Mac 系统进行安装的补丁，<a href="https://github.com/theJaxon/unlocker/releases" target="_blank" rel="noopener">Unlocker 在 github 的下载地址</a>  windows 选择第一个 unlocker302.zip 进行下载即可</p>
 <p><strong>Mac OS X 10镜像</strong>:  cdr [推荐], 懒人安装包, 因为易装, 麻烦少. dmg, 原始镜像, 没有试过这个格式的安装, 不了解填这个坑 我这里提供的是cdr 和MacOS Unlocker for VMware, 简称 Unlocker</p>
 <p>unlocker和Mac os下载地址 链接：<a href="https://pan.baidu.com/s/1e2TCqEdWECDd3zFJBaUiIg" target="_blank" rel="noopener">https://pan.baidu.com/s/1e2TCqEdWECDd3zFJBaUiIg</a>  提取码：uzry</p>
@@ -164,7 +161,8 @@
   <entry>
     <title>Java基础整理</title>
     <url>/2019/12/19/Java%E5%9F%BA%E7%A1%80%E6%95%B4%E7%90%86/</url>
-    <content><![CDATA[<p>[TOC]</p>
+    <content><![CDATA[<p><strong>面试整理</strong></p>
+<a id="more"></a>
 <h3 id="hashCode和equals的区别"><a href="#hashCode和equals的区别" class="headerlink" title="hashCode和equals的区别"></a>hashCode和equals的区别</h3><p>重写过 hashcode 和 equals 么，为什么重写equals时必须重写hashCode方法？equals和hashCode都是Object对象中的非final方法，它们设计的目的就是被用来覆盖(override)的，所以在程序设计中还是经常需要处理这两个方法。</p>
 <blockquote>
 <p>hashCode() 的作用是获取哈希码，也称为散列码；它实际上是返回一个int整数。这个哈希码的作用是确定该对象在哈希表中的索引位置。hashCode() 定义在JDK的Object.java中，这就意味着Java中的任何类都包含有hashCode() 函数。使用通过调用hashCode()方法获取对象的hash值。</p>
@@ -203,12 +201,13 @@
     <title>Navicat 12激活</title>
     <url>/2019/12/16/Navicat-12%E6%BF%80%E6%B4%BB/</url>
     <content><![CDATA[<p>github大神的<a href="https://github.com/DoubleLabyrinth/navicat-keygen" target="_blank" rel="noopener">激活项目地址</a></p>
+<a id="more"></a>
 <h3 id="激活步骤"><a href="#激活步骤" class="headerlink" title="激活步骤"></a>激活步骤</h3><h4 id="1-下载-从这里下载最新的release。从这里下载最新的Navicat-x64版本"><a href="#1-下载-从这里下载最新的release。从这里下载最新的Navicat-x64版本" class="headerlink" title="1.下载 从这里下载最新的release。从这里下载最新的Navicat x64版本"></a>1.下载 <a href="https://github.com/DoubleLabyrinth/navicat-keygen/releases" target="_blank" rel="noopener">从这里</a>下载最新的release。<a href="http://www.navicat.com.cn/download/direct-download?product=navicat_premium_cs_x64.exe&amp;location=1" target="_blank" rel="noopener">从这里</a>下载最新的Navicat x64版本</h4><h4 id="2-安装Navicat12-一路next-没啥问题"><a href="#2-安装Navicat12-一路next-没啥问题" class="headerlink" title="2.安装Navicat12  一路next,没啥问题"></a>2.安装Navicat12  一路next,没啥问题</h4><h4 id="3-解压navicat-keygen之后-打开cmd-exe执行命令"><a href="#3-解压navicat-keygen之后-打开cmd-exe执行命令" class="headerlink" title="3.解压navicat-keygen之后 打开cmd.exe执行命令"></a>3.解压navicat-keygen之后 打开cmd.exe执行命令</h4><p>navicat-patcher.exe “C:\Program Files\PremiumSoft\Navicat Premium 12” 回车 大概界面长这样 <code>navicat-patcher.exe</code>将会在当前目录生成一个新的RSA-2048私钥文件. 具体的原理看github</p>
 <p><img src="/2019/12/16/Navicat-12激活/image-20191216112712712.png" alt="image-20191216112712712"></p>
 <h4 id="4-接下来使用navicat-keygen-exe来生成序列号和激活码"><a href="#4-接下来使用navicat-keygen-exe来生成序列号和激活码" class="headerlink" title="4.接下来使用navicat-keygen.exe来生成序列号和激活码"></a>4.接下来使用<code>navicat-keygen.exe</code>来生成序列号和激活码</h4><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">navicat-keygen</span><span class="selector-class">.exe</span> <span class="selector-tag">-text</span> .\<span class="selector-tag">RegPrivateKey</span><span class="selector-class">.pem</span></span><br></pre></td></tr></table></figure>
 <p>详细参数含义查看github</p>
 <p>你会被要求选择Navicat产品类别、语言以及输入主版本号。之后会随机生成一个序列号。</p>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">Select Navicat product:</span><br><span class="line"><span class="bullet">0. </span>DataModeler</span><br><span class="line"><span class="bullet">1. </span>Premium</span><br><span class="line"><span class="bullet">2. </span>MySQL</span><br><span class="line"><span class="bullet">3. </span>PostgreSQL</span><br><span class="line"><span class="bullet">4. </span>Oracle</span><br><span class="line"><span class="bullet">5. </span>SQLServer</span><br><span class="line"><span class="bullet">6. </span>SQLite</span><br><span class="line"><span class="bullet">7. </span>MariaDB</span><br><span class="line"><span class="bullet">8. </span>MongoDB</span><br><span class="line"><span class="bullet">9. </span>ReportViewer</span><br><span class="line"></span><br><span class="line">(Input index)&gt; 1</span><br><span class="line"></span><br><span class="line">Select product language:</span><br><span class="line"><span class="bullet">0. </span>English</span><br><span class="line"><span class="bullet">1. </span>Simplified Chinese</span><br><span class="line"><span class="bullet">2. </span>Traditional Chinese</span><br><span class="line"><span class="bullet">3. </span>Japanese</span><br><span class="line"><span class="bullet">4. </span>Polish</span><br><span class="line"><span class="bullet">5. </span>Spanish</span><br><span class="line"><span class="bullet">6. </span>French</span><br><span class="line"><span class="bullet">7. </span>German</span><br><span class="line"><span class="bullet">8. </span>Korean</span><br><span class="line"><span class="bullet">9. </span>Russian</span><br><span class="line"><span class="bullet">10. </span>Portuguese</span><br><span class="line"></span><br><span class="line">(Input index)&gt; 1</span><br><span class="line"></span><br><span class="line">(Input major version number, range: 0 ~ 15, default: 12)&gt; 12</span><br><span class="line"></span><br><span class="line">Serial number:</span><br><span class="line">NAVO-2ORP-IN5A-GQEE</span><br><span class="line"></span><br><span class="line">Your name:</span><br></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">Select Navicat product:</span><br><span class="line"><span class="number">0.</span> DataModeler</span><br><span class="line"><span class="number">1.</span> Premium</span><br><span class="line"><span class="number">2.</span> MySQL</span><br><span class="line"><span class="number">3.</span> PostgreSQL</span><br><span class="line"><span class="number">4.</span> Oracle</span><br><span class="line"><span class="number">5.</span> SQLServer</span><br><span class="line"><span class="number">6.</span> SQLite</span><br><span class="line"><span class="number">7.</span> MariaDB</span><br><span class="line"><span class="number">8.</span> MongoDB</span><br><span class="line"><span class="number">9.</span> ReportViewer</span><br><span class="line"></span><br><span class="line">(Input index)&gt; <span class="number">1</span></span><br><span class="line"></span><br><span class="line">Select product language:</span><br><span class="line"><span class="number">0.</span> English</span><br><span class="line"><span class="number">1.</span> Simplified Chinese</span><br><span class="line"><span class="number">2.</span> Traditional Chinese</span><br><span class="line"><span class="number">3.</span> Japanese</span><br><span class="line"><span class="number">4.</span> Polish</span><br><span class="line"><span class="number">5.</span> Spanish</span><br><span class="line"><span class="number">6.</span> French</span><br><span class="line"><span class="number">7.</span> German</span><br><span class="line"><span class="number">8.</span> Korean</span><br><span class="line"><span class="number">9.</span> Russian</span><br><span class="line"><span class="number">10.</span> Portuguese</span><br><span class="line"></span><br><span class="line">(Input index)&gt; <span class="number">1</span></span><br><span class="line"></span><br><span class="line">(Input major version number, range: <span class="number">0</span> ~ <span class="number">15</span>, <span class="keyword">default</span>: <span class="number">12</span>)&gt; <span class="number">12</span></span><br><span class="line"></span><br><span class="line">Serial number:</span><br><span class="line">NAVO<span class="number">-2</span>ORP-IN5A-GQEE</span><br><span class="line"></span><br><span class="line">Your name:</span><br></pre></td></tr></table></figure>
 <p>接下来你会被要求输入<code>用户名</code>和<code>组织名</code>；请随便填写，但不要太长(注意 稍微别太普通 什么test demo 张三之类的 据说时间长了会失败 因为可能用这种名字的人很多) </p>
 <figure class="highlight livecodeserver"><table><tr><td class="code"><pre><span class="line">Your name: DoubleLabyrinth</span><br><span class="line">Your organization: DoubleLabyrinth</span><br><span class="line">Input request code (<span class="keyword">in</span> Base64), input <span class="literal">empty</span> <span class="built_in">line</span> <span class="built_in">to</span> <span class="keyword">end</span>:</span><br></pre></td></tr></table></figure>
 <p>之后你会被要求填入请求码。注意 <strong>不要关闭命令行</strong> <strong>不要关闭命令行</strong> <strong>不要关闭命令行</strong>!</p>
@@ -219,10 +218,10 @@
 <p>以上~</p>
 ]]></content>
       <categories>
-        <category>破解</category>
+        <category>工具</category>
       </categories>
       <tags>
-        <tag>资源-软件破解</tag>
+        <tag>工具</tag>
       </tags>
   </entry>
   <entry>
@@ -234,9 +233,10 @@
 <p>Spring Boot开发者工具并不仅限于本地开发，在运行远程应用时你也可以使用一些特性。<br>远程支持是可选的，你需要确保开发者工具被包含在重新打包的归档文件中。</p>
 </blockquote>
 <p>即对于本地代码的修改，能够实时的更新到远程应用中，从而实现本地代码和远程应用的联合调试。</p>
+<a id="more"></a>
 <h3 id="1-将devtools打到jar包中"><a href="#1-将devtools打到jar包中" class="headerlink" title="1. 将devtools打到jar包中"></a>1. 将<code>devtools</code>打到jar包中</h3><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">excludeDevtools</span>&gt;</span>false<span class="tag">&lt;/<span class="name">excludeDevtools</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h3 id="2-设置spring-devtools-remote-secret属性"><a href="#2-设置spring-devtools-remote-secret属性" class="headerlink" title="2. 设置spring.devtools.remote.secret属性"></a>2. 设置<code>spring.devtools.remote.secret</code>属性</h3><p>在<code>application.properties</code>中配置</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">spring.devtools.remote.secret=mysecrt</span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="meta">spring.devtools.remote.secret</span>=<span class="string">mysecrt</span></span><br></pre></td></tr></table></figure>
 <p>或在<code>application.yml</code>中配置</p>
 <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  devtools:</span></span><br><span class="line"><span class="attr">    remote:</span></span><br><span class="line"><span class="attr">      secret:</span> <span class="string">mysecret</span></span><br></pre></td></tr></table></figure>
 <h3 id="3-打好jar包，并在远程服务器运行"><a href="#3-打好jar包，并在远程服务器运行" class="headerlink" title="3. 打好jar包，并在远程服务器运行"></a>3. 打好jar包，并在远程服务器运行</h3><p><img src="/2019/12/06/SpringBoot学习-03-在IDEA上本地更新远程项目/1575531539101.png" alt="1575531539101"></p>
@@ -259,29 +259,52 @@
         <category>SpringBoot</category>
       </categories>
       <tags>
-        <tag>SpringBoot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
     <title>ThreadLocal理解</title>
     <url>/2019/12/05/ThreadLocal%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h3 id="Thread-变量-threadLocals"><a href="#Thread-变量-threadLocals" class="headerlink" title="Thread 变量 threadLocals"></a>Thread 变量 threadLocals</h3><p>线程类Thread内部有一个名为<code>threadLocals</code> 的 <code>ThreadLocal.ThreadLocalMap</code> 变量，它定义如下：</p>
+    <content><![CDATA[<p><strong>ThreadLocal是什么</strong></p>
+<p>​        ThreadLocal提供线程局部变量。这些变量与普通的变量不同之处在于，每个访问这种变量的线程（通过它的get或set方法）都有自己的、独立初始化的变量副本。</p>
+<a id="more"></a>
+<p>ThreadLocal实例通常是希望将状态关联到一个线程的类的私有静态字段（比如，user ID 或者 Transaction ID 等等）。</p>
+<p>（</p>
+<p>画外音：这段话表达了三个意思</p>
+<ol>
+<li>ThreadLocal是一种变量类型，我们称之为“线程局部变量”</li>
+<li>每个线程访问这种变量的时候都会创建该变量的副本，这个变量副本为线程私有</li>
+<li>ThreadLocal类型的变量一般用private static加以修饰</li>
+</ol>
+<p>）</p>
+<p>例如，下面的例子中这个类为每个线程生成唯一标识。一个线程的id是它第一次调用ThreadId.get()方法指定的。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.cjs.example;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadId</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger nextId = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Integer&gt; threadId = <span class="keyword">new</span> ThreadLocal&lt;Integer&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">protected</span> Integer <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> nextId.getAndIncrement();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> threadId.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    System.out.println(Thread.currentThread().getId());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ThreadLocal主要操作"><a href="#ThreadLocal主要操作" class="headerlink" title="ThreadLocal主要操作"></a>ThreadLocal主要操作</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 返回当前线程对ThreadLocal变量的“初始值”</span></span><br><span class="line"><span class="comment"> * 这个方法将在线程第一次访问变量（通过调用get方法）时被调用，如果之前已经调用过了就不会再调了</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the initial value for this thread-local</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 设置当前线程的ThreadLocal变量的副本为指定的值</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> value the value to be stored in the current thread's copy of this thread-local.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 返回当前线程的ThreadLocal变量副本的值</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the current thread's value of this thread-local</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 删除当前线程的ThreadLocal变量副本的值</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Thread-变量-threadLocals"><a href="#Thread-变量-threadLocals" class="headerlink" title="Thread 变量 threadLocals"></a>Thread 变量 threadLocals</h3><p>线程类Thread内部有一个名为<code>threadLocals</code> 的 <code>ThreadLocal.ThreadLocalMap</code> 变量，它定义如下：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* ThreadLocal values pertaining to this thread. This map is maintained</span></span><br><span class="line"><span class="comment">     * by the ThreadLocal class. */</span></span><br><span class="line">    ThreadLocal.ThreadLocalMap threadLocals = <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
 <h3 id="ThreadLocal-ThreadLocalMap"><a href="#ThreadLocal-ThreadLocalMap" class="headerlink" title="ThreadLocal.ThreadLocalMap"></a>ThreadLocal.ThreadLocalMap</h3><p><code>ThreadLocal.ThreadLocalMap</code> 是 <code>ThreadLocal</code> 的内部类</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * ThreadLocalMap is a customized hash map suitable only for</span></span><br><span class="line"><span class="comment"> * maintaining thread local values. No operations are exported</span></span><br><span class="line"><span class="comment"> * outside of the ThreadLocal class. The class is package private to</span></span><br><span class="line"><span class="comment"> * allow declaration of fields in class Thread.  To help deal with</span></span><br><span class="line"><span class="comment"> * very large and long-lived usages, the hash table entries use</span></span><br><span class="line"><span class="comment"> * WeakReferences for keys. However, since reference queues are not</span></span><br><span class="line"><span class="comment"> * used, stale entries are guaranteed to be removed only when</span></span><br><span class="line"><span class="comment"> * the table starts running out of space.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalMap</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>看注释的第一句话 <code>ThreadLocalMap is a customized hash map suitable only for maintaining thread local values.</code> 意思是 ThreadLocalMap 是一个自定义 HashMap，只适用于线程局部变量。完全可以把它看做是一个 HashMap。</p>
-<h3 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This class provides thread-local variables.  These variables differ from</span></span><br><span class="line"><span class="comment"> * their normal counterparts in that each thread that accesses one (via its</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> get&#125; or &#123;<span class="doctag">@code</span> set&#125; method) has its own, independently initialized</span></span><br><span class="line"><span class="comment"> * copy of the variable.  &#123;<span class="doctag">@code</span> ThreadLocal&#125; instances are typically private</span></span><br><span class="line"><span class="comment"> * static fields in classes that wish to associate state with a thread (e.g.,</span></span><br><span class="line"><span class="comment"> * a user ID or Transaction ID).</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * &lt;p&gt;For example, the class below generates unique identifiers local to each</span></span><br><span class="line"><span class="comment"> * thread.</span></span><br><span class="line"><span class="comment"> * A thread's id is assigned the first time it invokes &#123;<span class="doctag">@code</span> ThreadId.get()&#125;</span></span><br><span class="line"><span class="comment"> * and remains unchanged on subsequent calls.</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * ...</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>  Josh Bloch and Doug Lea</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span>   1.2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocal</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>大致意思就是，ThreadLocal 提供线程局部的变量，这些变量在每个线程中都有不同的副本，通过get和set方法就可以得到或设置它们。</p>
-</blockquote>
 <p>类<code>ThreadLocal</code>的结构如下：</p>
 <p><img src="/2019/12/05/ThreadLocal理解/5752218-92d415c7619d399b.webp" alt="img"></p>
-<p>类<code>ThreadLocal</code>的结构</p>
 <p>重要的方法只有两个：<strong>set 和 get</strong></p>
-<h3 id="ThreadLocal-set-value"><a href="#ThreadLocal-set-value" class="headerlink" title="ThreadLocal.set(value)"></a>ThreadLocal.set(value)</h3><p><code>ThreadLocal.set(value)</code> 向 <code>Thread</code> 内部的 <code>threadLocals</code> 变量添加值，它的实现如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// line 189</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Sets the current thread's copy of this thread-local variable</span></span><br><span class="line"><span class="comment"> * to the specified value.  Most subclasses will have no need to</span></span><br><span class="line"><span class="comment"> * override this method, relying solely on the &#123;<span class="doctag">@link</span> #initialValue&#125;</span></span><br><span class="line"><span class="comment"> * method to set the values of thread-locals.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> value the value to be stored in the current thread's copy of</span></span><br><span class="line"><span class="comment"> *        this thread-local.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    <span class="comment">// 获取线程内部 ThreadLocalMap 对象</span></span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span><span class="comment">// 给线程threadLocals变量new一个ThreadLocalMap对象，并添加第一个键值对</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line">......</span><br><span class="line"><span class="comment">// line 225</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Get the map associated with a ThreadLocal. Overridden in</span></span><br><span class="line"><span class="comment"> * InheritableThreadLocal.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span>  t the current thread</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the map</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">ThreadLocalMap <span class="title">getMap</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Create the map associated with a ThreadLocal. Overridden in</span></span><br><span class="line"><span class="comment"> * InheritableThreadLocal.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> t the current thread</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> firstValue value for the initial entry of the map</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">    t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="ThreadLocal-get"><a href="#ThreadLocal-get" class="headerlink" title="ThreadLocal.get()"></a>ThreadLocal.get()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            T result = (T)e.value;</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><blockquote>
+<h4 id="ThreadLocal-set-value"><a href="#ThreadLocal-set-value" class="headerlink" title="ThreadLocal.set(value)"></a>ThreadLocal.set(value)</h4><p><code>ThreadLocal.set(value)</code> 向 <code>Thread</code> 内部的 <code>threadLocals</code> 变量添加值，它的实现如下：</p>
+<p><img src="/2019/12/05/ThreadLocal理解/ThreadLocal理解.assets/874963-20181011152245886-1506205830-1582190360505.png" alt="img"></p>
+<p><img src="/2019/12/05/ThreadLocal理解/ThreadLocal理解.assets/874963-20181011152457548-439162523-1582190375526.png" alt="img"></p>
+<p><img src="/2019/12/05/ThreadLocal理解/ThreadLocal理解.assets/874963-20181011152603331-927753529-1582190399109.png" alt="img"></p>
+<p>可以看到，ThreadLocalMap底层是一个数组，数组中元素类型是Entry类型</p>
+<p>set操作是向当前线程的ThreadLocal.ThreadLocalMap类型的成员变量threadLocals中设置值，key是this，value是我们指定的值</p>
+<p>注意，这里传的this代表的是那个ThreadLocal类型的变量（或者说叫对象）</p>
+<p>也就是说，每个线程都维护了一个ThreadLocal.ThreadLocalMap类型的对象，而set操作其实就是以ThreadLocal变量为key，以我们指定的值为value，最后将这个键值对封装成Entry对象放到该线程的ThreadLocal.ThreadLocalMap对象中。每个ThreadLocal变量在该线程中都是ThreadLocal.ThreadLocalMap对象中的一个Entry。既然每个ThreadLocal变量都对应ThreadLocal.ThreadLocalMap中的一个元素，那么就可以对这些元素进行读写删除操作。</p>
+<h4 id="ThreadLocal-get"><a href="#ThreadLocal-get" class="headerlink" title="ThreadLocal.get()"></a>ThreadLocal.get()</h4><p><img src="/2019/12/05/ThreadLocal理解/ThreadLocal理解.assets/874963-20181011153747726-1579315823-1582190434817.png" alt="img"></p>
+<p>get()方法就是从当前线程的ThreadLocal.ThreadLocalMap对象中取出对应的ThreadLocal变量所对应的值</p>
+<p>同理，remove()方法就是清除这个值</p>
+<p>用图形表示的话，大概是这样的：</p>
+<p><img src="/2019/12/05/ThreadLocal理解/ThreadLocal理解.assets/874963-20181011153955199-569890474-1582190462355.png" alt="img"></p>
+<p>或者是这样的：</p>
+<p><img src="/2019/12/05/ThreadLocal理解/ThreadLocal理解.assets/874963-20181011160429567-1437635434-1582190462258.png" alt="img"></p>
+<h3 id="ThreadLocal使用场景主要是在线程生命周期内传值"><a href="#ThreadLocal使用场景主要是在线程生命周期内传值" class="headerlink" title="ThreadLocal使用场景主要是在线程生命周期内传值"></a>ThreadLocal使用场景主要是在线程生命周期内传值</h3><p><strong>一切都归功于ThreadLocalMap</strong></p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><blockquote>
 <p><code>ThreadLocal</code>和<code>Synchronized</code>都是为了解决多线程中相同变量的访问冲突问题，不同的是：</p>
 <ul>
 <li><code>Synchronized</code> 是通过线程等待，牺牲时间来解决访问冲突</li>
@@ -291,16 +314,18 @@
 <p>正因为<code>ThreadLocal</code>的线程隔离特性，使他的应用场景相对来说更为特殊一些。在android中Looper、ActivityThread以及AMS中都用到了ThreadLocal。当某些数据是以线程为作用域并且不同线程具有不同的数据副本的时候，就可以考虑采用ThreadLocal。</p>
 ]]></content>
       <categories>
-        <category>Java基础</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>Java基础</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
     <title>SpringBoot学习-02.在IDEA上实现项目的远程调试</title>
     <url>/2019/12/05/SpringBoot%E5%AD%A6%E4%B9%A0-02-%E5%9C%A8IDEA%E4%B8%8A%E5%AE%9E%E7%8E%B0%E9%A1%B9%E7%9B%AE%E7%9A%84%E8%BF%9C%E7%A8%8B%E8%B0%83%E8%AF%95/</url>
-    <content><![CDATA[<h3 id="1-在远程服务器执行jar"><a href="#1-在远程服务器执行jar" class="headerlink" title="1. 在远程服务器执行jar"></a>1. 在远程服务器执行jar</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,<span class="built_in">suspend</span>=n,address=9561 wechat-develop-0.0.1-SNAPSHOT.jar</span><br><span class="line">使用nohup启动</span><br><span class="line">nohup java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,<span class="built_in">suspend</span>=n,address=9561 wechat-develop-0.0.1-SNAPSHOT.jar &gt; nohup-wechat.out 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<p><strong>远程的时候我们往往可能不知道问题出自哪儿，通过这个方法可以使用本地代码调试远程的程序。</strong></p>
+<a id="more"></a>
+<h3 id="1-在远程服务器执行jar"><a href="#1-在远程服务器执行jar" class="headerlink" title="1. 在远程服务器执行jar"></a>1. 在远程服务器执行jar</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,<span class="built_in">suspend</span>=n,address=9561 wechat-develop-0.0.1-SNAPSHOT.jar</span><br><span class="line">使用nohup启动</span><br><span class="line">nohup java -jar -Xdebug -Xrunjdwp:transport=dt_socket,server=y,<span class="built_in">suspend</span>=n,address=9561 wechat-develop-0.0.1-SNAPSHOT.jar &gt; nohup-wechat.out 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 <p>address 是开启远程端口，本地通过监听这个端口来实现远程调试。</p>
 <p>远程端口需要防火墙开启或者开放端口</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -I INPUT 4 -p tcp -m state --state NEW -m tcp --dport 9561 -j ACCEPT</span><br></pre></td></tr></table></figure>
@@ -322,32 +347,33 @@
         <category>SpringBoot</category>
       </categories>
       <tags>
-        <tag>SpringBoot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
     <title>SpringBoot学习-01.实现微信接入</title>
     <url>/2019/12/05/SpringBoot%E5%AD%A6%E4%B9%A0-01-%E5%AE%9E%E7%8E%B0%E5%BE%AE%E4%BF%A1%E6%8E%A5%E5%85%A5/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<a id="more"></a>]]></content>
       <categories>
         <category>SpringBoot</category>
       </categories>
       <tags>
-        <tag>SpringBoot</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
     <title>Auto.js学习</title>
     <url>/2019/12/03/Auto-js%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<p>转载至<a href="https://zhuanlan.zhihu.com/p/90065914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/90065914</a></p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在正文开始之前，我们要知道Auto.js是啥，根据官方文档定义：Auto.js是一款无需root权限的JavaScript自动化软件。如何理解它？</p>
+    <content><![CDATA[<h3 id="Auto-js学习"><a href="#Auto-js学习" class="headerlink" title="Auto.js学习"></a>Auto.js学习</h3><p>​                                                                                                            转载至<a href="https://zhuanlan.zhihu.com/p/90065914" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/90065914</a></p>
+<a id="more"></a>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在正文开始之前，我们要知道Auto.js是啥，根据官方文档定义：Auto.js是一款无需root权限的JavaScript自动化软件。如何理解它？</p>
 <ol>
 <li>Auto.js是一款安卓手机应用，和微信一样，安装在手机上使用</li>
 <li>Auto.js是一款自动化软件，根据脚本内容便可以自动地执行相关的操作，并且手机无需root</li>
 <li>Auto.js的脚本需要使用JavaScript编写</li>
 </ol>
 <p>另外，需要说明的是，文章面向<strong>有编程基础</strong>但不了解Auto.js的人群。文章以开发自动完成淘宝领喵币任务的脚本举例，对代码讲解，旨在让您可以快速上手开发Auto.js脚本。</p>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><strong>准备阶段</strong></p>
+<h3 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h3><p><strong>准备阶段</strong></p>
 <ul>
 <li>手机安装Auto.js应用</li>
 <li>电脑上有代码编辑器，vscode最佳（Auto.js作者提供了vscode的插件便于调试）</li>
@@ -418,7 +444,7 @@
         <category>小技能</category>
       </categories>
       <tags>
-        <tag>Auto.js</tag>
+        <tag>js</tag>
       </tags>
   </entry>
   <entry>
@@ -426,6 +452,7 @@
     <url>/2019/12/02/%E6%96%87%E4%BB%B6%E5%AF%B9%E6%AF%94%E7%A5%9E%E5%99%A8Beyond-Compare4/</url>
     <content><![CDATA[<p>转载至<a href="https://touwoyimuli.github.io/2019/07/04/Beyond-Compare-4文件对比神器-（带官网离线安装包和破解工具）-破解教程/" target="_blank" rel="noopener">https://touwoyimuli.github.io/2019/07/04/Beyond-Compare-4文件对比神器-（带官网离线安装包和破解工具）-破解教程/</a></p>
 <p>提供<code>Beyond Compare 4</code>软件的破解教程，以及相关资源下载。</p>
+<a id="more"></a>
 <h2 id="软件用途："><a href="#软件用途：" class="headerlink" title="软件用途："></a>软件用途：</h2><p>一个程序，可以很容易地比较文件和文件夹。使用该软件提供的功能强大的工具，你将能够找到的所有文件/文件夹之间的差异，然后再结合或同步它们。</p>
 <p>它能够通过检查修改的唯一文件大小和日期很快整个比较硬盘驱动器或文件夹。或者，它可以通过文件的字节比较，这需要较长的时间进行更彻底，字节，但它提供了更精确的结果。该方案是能够比较任何类型的文件，无论是可执行文件（.exe文件），文档（.doc，.pdf等），图像等</p>
 <p><img src="/2019/12/02/文件对比神器Beyond-Compare4/20190921224959.png" alt="img"></p>
@@ -458,22 +485,17 @@
 </ul>
 ]]></content>
       <categories>
-        <category>破解</category>
+        <category>工具</category>
       </categories>
       <tags>
-        <tag>资源-软件破解</tag>
+        <tag>工具</tag>
       </tags>
   </entry>
   <entry>
     <title>Nginx理解</title>
     <url>/2019/04/01/Nginx%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="Nginx理解"><a href="#Nginx理解" class="headerlink" title="Nginx理解"></a>Nginx理解</h2><h3 id="代理介绍"><a href="#代理介绍" class="headerlink" title="代理介绍"></a>代理介绍</h3><p>　　在Java设计模式中，代理模式是这样定义的：给某个对象提供一个代理对象，并由代理对象控制原对象的引用。代理简单来说，就是如果我们想做什么，但又不想直接去做，那么这时候就找另外一个人帮我们去做。比如中介公司就是给我们做代理服务的，我们委托中介公司帮我们找房子。　　<br>    Nginx 主要能够代理如下几种协议，其中用到的最多的就是做Http代理服务器。</p>
-<p><img src="/2019/04/01/Nginx理解/1120165-20180905232339438-913760288.png" alt="img"></p>
-<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>​    VPN 就是做正向代理的。正向代理服务器位于客户端和服务器之间，为了向服务器获取数据，客户端要向代理服务器发送一个请求，并指定目标服务器，代理服务器将目标服务器返回的数据转交给客户端。这里客户端是要进行一些正向代理的设置的。</p>
-<p>​    什么是 VPN，VPN 通俗的讲就是一种中转服务，当我们电脑接入 VPN 后，我们对外 IP 地址就会变成 VPN 服务器的 公网 IP，我们请求或接受任何数据都会通过这个VPN 服务器然后传入到我们本机。这样做有什么好处呢？比如 VPN 游戏加速方面的原理，我们要玩网通区的 LOL，但是本机接入的是电信的宽带，玩网通区的会比较卡，这时候就利用 VPN 将电信网络变为网通网络，然后在玩网通区的LOL就不会卡了（注意：VPN 是不能增加带宽的，不要以为不卡了是因为网速提升了）。</p>
-<p>　　理解这两种代理的关键在于代理服务器所代理的对象是什么，正向代理代理的是客户端，我们需要在客户端进行一些代理的设置。而反向代理代理的是服务器，作为客户端的我们是无法感知到服务器的真实存在的。<br>    反向代理和正向代理的区别就是：<strong>正向代理代理客户端，反向代理代理服务器。</strong></p>
-<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>e.g 使用 nginx 反向代理 <a href="http://www.123.com" target="_blank" rel="noopener">www.123.com</a> 直接跳转到127.0.0.1:8080<br>步骤:启动一个 tomcat，浏览器地址栏输入 127.0.0.1:8080<br>通过修改本地 host 文件，将 <a href="http://www.123.com" target="_blank" rel="noopener">www.123.com</a> 映射到 127.0.0.1</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">127<span class="selector-class">.0</span><span class="selector-class">.0</span><span class="selector-class">.1</span> <span class="selector-tag">www</span><span class="selector-class">.123</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<h3 id="代理介绍"><a href="#代理介绍" class="headerlink" title="代理介绍"></a>代理介绍</h3><p>　　在Java设计模式中，代理模式是这样定义的：给某个对象提供一个代理对象，并由代理对象控制原对象的引用。代理简单来说，就是如果我们想做什么，但又不想直接去做，那么这时候就找另外一个人帮我们去做。比如中介公司就是给我们做代理服务的，我们委托中介公司帮我们找房子。　</p>
+<a id="more"></a>　<br>    Nginx 主要能够代理如下几种协议，其中用到的最多的就是做Http代理服务器。<br><br><img src="/2019/04/01/Nginx理解/1120165-20180905232339438-913760288.png" alt="img"><br><br>### 正向代理<br><br>​    VPN 就是做正向代理的。正向代理服务器位于客户端和服务器之间，为了向服务器获取数据，客户端要向代理服务器发送一个请求，并指定目标服务器，代理服务器将目标服务器返回的数据转交给客户端。这里客户端是要进行一些正向代理的设置的。<br><br>​    什么是 VPN，VPN 通俗的讲就是一种中转服务，当我们电脑接入 VPN 后，我们对外 IP 地址就会变成 VPN 服务器的 公网 IP，我们请求或接受任何数据都会通过这个VPN 服务器然后传入到我们本机。这样做有什么好处呢？比如 VPN 游戏加速方面的原理，我们要玩网通区的 LOL，但是本机接入的是电信的宽带，玩网通区的会比较卡，这时候就利用 VPN 将电信网络变为网通网络，然后在玩网通区的LOL就不会卡了（注意：VPN 是不能增加带宽的，不要以为不卡了是因为网速提升了）。<br><br>　　理解这两种代理的关键在于代理服务器所代理的对象是什么，正向代理代理的是客户端，我们需要在客户端进行一些代理的设置。而反向代理代理的是服务器，作为客户端的我们是无法感知到服务器的真实存在的。<br>    反向代理和正向代理的区别就是：<strong>正向代理代理客户端，反向代理代理服务器。</strong><br><br>### 反向代理<br><br>e.g 使用 nginx 反向代理 <a href="http://www.123.com" target="_blank" rel="noopener">www.123.com</a> 直接跳转到127.0.0.1:8080<br>步骤:启动一个 tomcat，浏览器地址栏输入 127.0.0.1:8080<br>通过修改本地 host 文件，将 <a href="http://www.123.com" target="_blank" rel="noopener">www.123.com</a> 映射到 127.0.0.1<br><br><figure class="highlight css"><table><tr><td class="code"><pre><span class="line">127<span class="selector-class">.0</span><span class="selector-class">.0</span><span class="selector-class">.1</span> <span class="selector-tag">www</span><span class="selector-class">.123</span><span class="selector-class">.com</span></span><br></pre></td></tr></table></figure>
 <p>配置完成之后，我们便可以通过 <a href="http://www.123.com:8080" target="_blank" rel="noopener">www.123.com:8080</a> 访问到第一步出现的 Tomcat初始界面。<br>如何只需要输入 <a href="http://www.123.com" target="_blank" rel="noopener">www.123.com</a> 便可以跳转到 Tomcat初始界面呢？便用到 nginx的反向代理。</p>
 <p>在 nginx.conf 配置文件中增加如下配置：</p>
 <pre><code>server {
@@ -493,13 +515,14 @@
       </categories>
       <tags>
         <tag>环境搭建</tag>
-        <tag>Nginx</tag>
       </tags>
   </entry>
   <entry>
     <title>java反射</title>
     <url>/2019/03/26/java%E5%8F%8D%E5%B0%84/</url>
-    <content><![CDATA[<h4 id="Java反射原理（使用的前提条件：必须先得到代表的字节码的Class，Class类用于表示-class文件（字节码））"><a href="#Java反射原理（使用的前提条件：必须先得到代表的字节码的Class，Class类用于表示-class文件（字节码））" class="headerlink" title="Java反射原理（使用的前提条件：必须先得到代表的字节码的Class，Class类用于表示.class文件（字节码））"></a>Java反射原理<strong>（使用的前提条件：必须先得到代表的字节码的Class，Class类用于表示.class文件（字节码））</strong></h4><p>1.将Java文件保存到本地硬盘</p>
+    <content><![CDATA[<p><strong>Java反射原理（使用的前提条件：必须先得到代表的字节码的Class，Class类用于表示.class文件（字节码）） </strong></p>
+<a id="more"></a>
+<p>1.将Java文件保存到本地硬盘</p>
 <p>2.编译Java文件，生成.class文件</p>
 <p>3.使用Java虚拟机（JVM）将字节码文件加载到内存</p>
 <p>4.字节码文件在内存中使用Class类表示</p>
@@ -687,6 +710,7 @@
     <title>spring容器启动的加载过程</title>
     <url>/2019/03/25/spring%E5%AE%B9%E5%99%A8%E5%90%AF%E5%8A%A8%E7%9A%84%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B/</url>
     <content><![CDATA[<p>相当长  现在看不懂 以后有机会看一下 转载地址<a href="https://www.cnblogs.com/hjy9420/p/4218140.html" target="_blank" rel="noopener">https://www.cnblogs.com/hjy9420/p/4218140.html</a></p>
+<a id="more"></a>
 <p>使用spring，我们在web.xml都会配置ContextLoaderListener</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span></span><br><span class="line">          org.springframework.web.context.ContextLoaderListener</span><br><span class="line">      <span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ContextLoaderListener</span> <span class="keyword">extends</span> <span class="title">ContextLoader</span> <span class="keyword">implements</span> <span class="title">ServletContextListener</span> </span>&#123;</span><br><span class="line"><span class="comment">//由于他继承自ContextLoader，加载的时候当然会先加载他啦，那我们来看看这个类</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -745,7 +769,6 @@
         <category>Spring</category>
       </categories>
       <tags>
-        <tag>Java</tag>
         <tag>Spring</tag>
       </tags>
   </entry>
@@ -758,6 +781,7 @@
 <li>结构型模式(7种)：<strong>适配器模式</strong>、<strong>装饰器模式</strong>、代理模式、外观模式、桥接模式、组合模式、享元模式；</li>
 <li>行为型模式(11种)：<strong>策略模式</strong>、<strong>模板方法模式</strong>、<strong>观察者模式</strong>、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</li>
 </ul>
+<a id="more"></a>
 <h3 id="一、工厂方法模式："><a href="#一、工厂方法模式：" class="headerlink" title="一、工厂方法模式："></a>一、工厂方法模式：</h3><p>工厂是干嘛的，就是用来生产的嘛，这里说的工厂也是用来生产的，它是用来生产对象的。也就是说，有些对象我们可以在工厂里面生产，需要用时直接从工厂里面拿出来即可，而不用每次需要用的时候都去new对象。工厂方法模式又分为以下三种：</p>
 <ul>
 <li><strong>普通工厂模式：</strong>就是建立一个工厂类，对实现了同一接口的一些类进行实例的创建。</li>
@@ -879,7 +903,8 @@
   <entry>
     <title>mysql整理</title>
     <url>/2019/03/21/mysql%E6%95%B4%E7%90%86/</url>
-    <content><![CDATA[<h2 id="什么是数据库？"><a href="#什么是数据库？" class="headerlink" title="什么是数据库？"></a>什么是数据库？</h2><p>数据库（Database）是按照数据结构来组织、存储和管理数据的仓库。</p>
+    <content><![CDATA[<a id="more"></a>
+<h2 id="什么是数据库？"><a href="#什么是数据库？" class="headerlink" title="什么是数据库？"></a>什么是数据库？</h2><p>数据库（Database）是按照数据结构来组织、存储和管理数据的仓库。</p>
 <p>每个数据库都有一个或多个不同的 API 用于创建，访问，管理，搜索和复制所保存的数据。</p>
 <p>我们也可以将数据存储在文件中，但是在文件中读写数据速度相对较慢。</p>
 <p>所以，现在我们使用关系型数据库管理系统（RDBMS）来存储和管理的大数据量。所谓的关系型数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。</p>
@@ -907,7 +932,7 @@
 <h2 id="MySQL常用命令"><a href="#MySQL常用命令" class="headerlink" title="MySQL常用命令"></a>MySQL常用命令</h2><p>1、如何登陆mysql数据库</p>
 <figure class="highlight ebnf"><table><tr><td class="code"><pre><span class="line"><span class="attribute">mysql -u username -p</span></span><br></pre></td></tr></table></figure>
 <p>1.1、指定IP、端口</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">mysql</span> <span class="selector-tag">-uroot</span> <span class="selector-tag">-h</span> 192<span class="selector-class">.168</span><span class="selector-class">.1</span><span class="selector-class">.213</span> <span class="selector-tag">-P3306</span> <span class="selector-tag">-p123456</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">mysql -uroot -h <span class="number">192.168</span><span class="number">.1</span><span class="number">.213</span> -P3306 -p123456</span><br></pre></td></tr></table></figure>
 <p>-P（大写）：指定端口；<br>-p（小写）：指定密码；</p>
 <p>2、如何开启/关闭mysql服务</p>
 <figure class="highlight crmsh"><table><tr><td class="code"><pre><span class="line">service mysql <span class="literal">start</span>/<span class="literal">stop</span></span><br></pre></td></tr></table></figure>
@@ -934,7 +959,7 @@
 <p><img src="/2019/03/21/mysql整理/20170624151912966.png" alt="è¿éåå¾çæè¿°"></p>
 <p>提示：</p>
 <p>（1）日期格式中只有TIMESTAMP 可以使用MySQL提供的函数，实现自动设置时间和自动更新时间，脚本如下：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">`create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP <span class="keyword">COMMENT</span> <span class="string">'创建时间'</span>,</span><br><span class="line"><span class="string">`update_time`</span> <span class="built_in">timestamp</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">COMMENT</span> <span class="string">'更新时间'</span>,</span><br></pre></td></tr></table></figure>
+<figure class="highlight pgsql"><table><tr><td class="code"><pre><span class="line">`create_time` <span class="type">timestamp</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">COMMENT</span> <span class="string">'创建时间'</span>,</span><br><span class="line">`update_time` <span class="type">timestamp</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="built_in">CURRENT_TIMESTAMP</span> <span class="keyword">COMMENT</span> <span class="string">'更新时间'</span>,</span><br></pre></td></tr></table></figure>
 <p>（2）Navicat for MqlSQL设置如下：</p>
 <p><img src="/2019/03/21/mysql整理/20170624152729114.png" alt="è¿éåå¾çæè¿°"></p>
 <p>（3）、使用TIMESTAMP 要认识到，他会停止在2038年的一个时刻，但MySQL官方应该后期会提供相应的支持。</p>
@@ -1003,7 +1028,8 @@
   <entry>
     <title>spring相关面试</title>
     <url>/2019/03/20/spring%E7%9B%B8%E5%85%B3%E9%9D%A2%E8%AF%95/</url>
-    <content><![CDATA[<h4 id="spring-bean的生命周期"><a href="#spring-bean的生命周期" class="headerlink" title="spring bean的生命周期"></a>spring bean的生命周期</h4><ol>
+    <content><![CDATA[<a id="more"></a>
+<h4 id="spring-bean的生命周期"><a href="#spring-bean的生命周期" class="headerlink" title="spring bean的生命周期"></a>spring bean的生命周期</h4><ol>
 <li><p>spring调用bean的构造函数(或工厂模式方法)实例化bean</p>
 </li>
 <li><p>spring对bean进行依赖注入将成员变量赋值(set方式)</p>
@@ -1017,7 +1043,7 @@
 <li>此时bean已经准备就绪，可以被应用程序使用了，他们将一直驻留在应用上下文中，直到该应用上下文被销毁；</li>
 <li>若bean实现了DisposableBean接口，spring将调用它的distroy()接口方法。同样的，如果bean使用了destroy-method属性声明了销毁方法，则该方法被调用；</li>
 </ol>
-<p><img src="/2019/03/20/spring相关面试/spring相关/20180830171047_340.jpg" alt="img"></p>
+<p><img src="/2019/03/20/spring相关面试/20180830171047_340.jpg" alt="img"></p>
 <h5 id="Spring-中常见的创建对象的注解有哪些？"><a href="#Spring-中常见的创建对象的注解有哪些？" class="headerlink" title="Spring 中常见的创建对象的注解有哪些？"></a>Spring 中常见的创建对象的注解有哪些？</h5><ul>
 <li>@Component</li>
 <li>@Controller</li>
@@ -1063,7 +1089,8 @@
   <entry>
     <title>spring事务</title>
     <url>/2019/03/20/spring%E4%BA%8B%E5%8A%A1/</url>
-    <content><![CDATA[<h2 id="Spring事务的用法与原理"><a href="#Spring事务的用法与原理" class="headerlink" title="Spring事务的用法与原理"></a>Spring事务的用法与原理</h2><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，spring是无法提供事务功能的。对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行：</p>
+    <content><![CDATA[<a id="more"></a>
+<h2 id="Spring事务的用法与原理"><a href="#Spring事务的用法与原理" class="headerlink" title="Spring事务的用法与原理"></a>Spring事务的用法与原理</h2><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，spring是无法提供事务功能的。对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行：</p>
 <ol>
 <li>获取连接 Connection con = DriverManager.getConnection()</li>
 <li>开启事务con.setAutoCommit(true/false);</li>
@@ -1145,14 +1172,178 @@
       </tags>
   </entry>
   <entry>
+    <title>Java基础</title>
+    <url>/2019/03/13/Java%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<a id="more"></a>
+<h5 id="1-hashcode相等的两个类一定相等吗？equals呢？相反呢？"><a href="#1-hashcode相等的两个类一定相等吗？equals呢？相反呢？" class="headerlink" title="1.hashcode相等的两个类一定相等吗？equals呢？相反呢？"></a>1.hashcode相等的两个类一定相等吗？equals呢？相反呢？</h5><p>1.equal()相等的两个对象他们的hashCode()肯定相等，也就是用equal()对比是绝对可靠的。<br>2.hashCode()相等的两个对象他们的equal()不一定相等，也就是hashCode()不是绝对可靠的。<br>对于需要大量并且快速的对比的话如果都用equal()去做显然效率太低，所以解决方式是，每当需要对比的时候，首先用hashCode()去对比，如果hashCode()不一样，则表示这两个对象肯定不相等（也就是不必再用equal()去再对比了）,如果hashCode()相同，此时再对比他们的equal()，如果equal()也相同，则表示这两个对象是真的相同了，这样既能大大提高了效率也保证了对比的绝对正确性。</p>
+<h5 id="2-介绍一下集合框架"><a href="#2-介绍一下集合框架" class="headerlink" title="2.介绍一下集合框架"></a>2.介绍一下集合框架</h5><p>分为三块：List列表、Set集合、Map映射</p>
+<p><strong>Set、List和Map可以看做集合的三大类：</strong><br><strong>List集合是有序集合，集合中的元素可以重复，访问集合中的元素可以根据元素的索引来访问。</strong><br><strong>Set集合是无序集合，集合中的元素不可以重复，访问集合中的元素只能根据元素本身来访问（也是集合里元素不允许重复的原因）。</strong><br><strong>Map集合中保存Key-value对形式的元素，访问时只能根据每项元素的key来访问其value。</strong> </p>
+<p><strong>1.List接口</strong><br>List接口继承于Collection接口，它可以定义一个<strong>允许重复</strong>的<strong>有序集合</strong>。因为List中的元素是有序的，所以我们可以通过使用索引（元素在List中的位置，类似于数组下标）来访问List中的元素，这类似于Java的数组。</p>
+<p>List接口为Collection直接接口。List所代表的是<strong>有序的Collection</strong>，即它用某种特定的插入顺序来维护元素顺序。用户可以对列表中每个元素的插入位置进行精确地控制，同时可以根据元素的整数索引（在列表中的位置）访问元素，并搜索列表中的元素。实现List接口的集合主要有：ArrayList、LinkedList、Vector、Stack。</p>
+<p><strong>Map一种映射，用于储存关系型数据，保存着两种值，一组用于保存key,另一组用来保存value。并且key不允许重复。</strong><br><strong>HashMap底层就是一个数组，数组中根据存入的Key的HashCode决定存放位置，其Entry单元中有四个属性，分别为HashCode，Key，Vaule，和下一个Entry</strong>，这样就形成了一个链表，当HashMap中的另一个拥有相同的HashCode值的不同的Key存入时，会将原来的Entry赋到新Entry的属性中，然后形成Entry链，查询的时候先比较HashCode，如果相同且Key值相同则直接取出，如果HashCode相同Key值不同则继续顺着链表寻找直到寻找到相同的Key值。<br>TreeMap与HashMap的不同：表象上时TreeMap可以对Key进行排序，原因时TreeMap使用的时“红黑树”的二叉树结构储存Entry，也就是排序二叉树，左边恒放比此值小的数右边恒放比此值大的树，按照当前节点值与传入查询值的比较进行判断决定其存放位置/查询其数值；<br>Set集合：Set与Map可以手动的互相转换 Set转换Map只需要新建一个对象，对象中又key和value两个属性，新建一个类继承Set存储新建的对象即可实现。Map转换为Set只需要将Map的Value固定，只使用Key存储数据即可实现；<br>Table:Map的线程安全型号；</p>
+<h5 id="3-hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？"><a href="#3-hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？" class="headerlink" title="3.hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？"></a>3.hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？</h5><p>hashtable简单的理解就是hashmap的线程安全类 其方法大部分都相同只不过家了synchronize关键字保证其线程安全。其他的区别也有继承的接口不同这点。<br>concurrenthashtable则是改进了hashtable的效率，hashtable虽然安全但是不能多线程同时操作，concurrenthashtable使用了分块的模式支持多线程操作，且使用了lock替换synchronize来提高了效率。</p>
+<h5 id="4-hashmap与treemap的区别，底层数据结构是什么样的？"><a href="#4-hashmap与treemap的区别，底层数据结构是什么样的？" class="headerlink" title="4.hashmap与treemap的区别，底层数据结构是什么样的？"></a>4.hashmap与treemap的区别，底层数据结构是什么样的？</h5><p>HashMap：数组方式存储key/value，线程非安全，允许null作为key和value，key不可以重复，value允许重复，不保证元素迭代顺序是按照插入时的顺序，key的hash值是先计算key的hashcode值，然后再进行计算，每次容量扩容会重新计算所以key的hash值，会消耗资源，要求key必须重写equals和hashcode方法</p>
+<p>默认初始容量16，加载因子0.75，扩容为旧容量乘2，查找元素快，如果key一样则比较value，如果value不一样，则按照链表结构存储value，就是一个key后面有多个value；</p>
+<p>TreeMap：基于红黑二叉树的NavigableMap的实现，线程非安全，不允许null，key不可以重复，value允许重复，存入TreeMap的元素应当实现Comparable接口或者实现Comparator接口，会按照排序后的顺序迭代元素，两个相比较的key不得抛出classCastException。主要用于存入元素的时候对元素进行自动排序，迭代输出的时候就按排序顺序输出  </p>
+<h5 id="5-线程池用过么，都有什么参数？底层如何实现的？"><a href="#5-线程池用过么，都有什么参数？底层如何实现的？" class="headerlink" title="5.线程池用过么，都有什么参数？底层如何实现的？"></a>5.线程池用过么，都有什么参数？底层如何实现的？</h5><ol>
+<li>newSingleThreadExecutor</li>
+</ol>
+<p>创建一个单线程的线程池。这个线程池只有一个线程在工作，也就是相当于单线程串行执行所有任务。如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。此线程池保证所有任务的执行顺序按照任务的提交顺序执行。</p>
+<p>2.newFixedThreadPool</p>
+<p>创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。线程池的大小一旦达到最大值就会保持不变，如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。</p>
+<ol start="3">
+<li>newCachedThreadPool</li>
+</ol>
+<p>创建一个可缓存的线程池。如果线程池的大小超过了处理任务所需要的线程，那么就会回收部分空闲（60秒不执行任务）的线程，当任务数增加时，此线程池又可以智能的添加新线程来处理任务。此线程池不会对线程池大小做限制，线程池大小完全依赖于操作系统（或者说JVM）能够创建的最大线程大小。</p>
+<p>4.newScheduledThreadPool</p>
+<p>创建一个大小无限的线程池。此线程池支持定时以及周期性执行任务的需求。</p>
+<p>线程池：<br>1、线程是稀缺资源，使用线程池可以减少创建和销毁线程的次数，每个工作线程都可以重复使用。<br>2、可以根据系统的承受能力，调整线程池中工作线程的数量，防止因为消耗过多内存导致服务器崩溃。<br>参数： </p>
+<p>一般来说，非CPU密集型的业务（加解密、压缩解压缩、搜索排序等业务是CPU密集型的业务），瓶颈都在后端数据库，本地CPU计算的时间很少，所以设置几十或者几百个工作线程也都是可能的。</p>
+<p>N核服务器，通过执行业务的单线程分析出本地计算时间为x，等待时间为y，则工作线程数（线程池线程数）设置为 N*(x+y)/x，能让CPU的利用率最大化。</p>
+<p>corePoolSize - 池中所保存的线程数，包括空闲线程。</p>
+<p>maximumPoolSize-池中允许的最大线程数。</p>
+<p>keepAliveTime - 当线程数大于核心时，此为终止前多余的空闲线程等待新任务的最长时间。</p>
+<p>unit - keepAliveTime 参数的时间单位。</p>
+<p>workQueue - 执行前用于保持任务的队列。此队列仅保持由 execute方法提交的 Runnable任务。</p>
+<p>threadFactory - 执行程序创建新线程时使用的工厂。</p>
+<p>handler - 由于超出线程范围和队列容量而使执行被阻塞时所使用的处理程序。</p>
+<p>底层核心实现为封装一层线程类work，在运行的时候再执行完自己的线程后主动去队列中拿取下一条线程去执行。</p>
+<h5 id="Thread-类中的start-和-run-方法有什么区别？"><a href="#Thread-类中的start-和-run-方法有什么区别？" class="headerlink" title="Thread 类中的start() 和 run() 方法有什么区别？"></a>Thread 类中的start() 和 run() 方法有什么区别？</h5><p>这个问题经常被问到，但还是能从此区分出面试者对Java线程模型的理解程度。start()方法被用来启动新创建的线程，而且start()内部调用了run()方法，这和直接调用run()方法的效果不一样。当你调用run()方法的时候，只会是在原来的线程中调用，没有新的线程启动，start()方法才会启动新线程。</p>
+<h5 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h5><p>RPC就是从一台机器（客户端）上通过参数传递的方式调用另一台机器（服务器）上的一个函数或方法（可以统称为服务）并得到返回的结果。</p>
+<p>RPC会隐藏底层的通讯细节（不需要直接处理Socket通讯或Http通讯）。</p>
+<p>客户端发起请求，服务器返回响应（类似于Http的工作方式）RPC在使用形式上像调用本地函数（或方法）一样去调用远程的函数（或方法）。</p>
+<p>客户端把参数先转成一个字节流，传给服务端后，再把字节流转成自己能读取的格式。这个过程叫序列化和反序列化。</p>
+<p>RPC 调用分以下两种：</p>
+<ol>
+<li>同步调用<br>客户方等待调用执行完成并返回结果。</li>
+<li>异步调用<br>客户方调用后不用等待执行结果返回，但依然可以通过回调通知等方式获取返回结果。 若客户方不关心调用返回结果，则变成单向异步调用，单向调用不用返回结果。</li>
+</ol>
+<p>异步和同步的区分在于是否等待服务端执行完成并返回结果。</p>
+<h5 id="java读取xml文件的四种方法"><a href="#java读取xml文件的四种方法" class="headerlink" title="java读取xml文件的四种方法"></a>java读取xml文件的四种方法</h5><p>第一种 DOM 实现方法：</p>
+<p>第二种 DOM4J实现方法</p>
+<p>第三种 JDOM实现方法：</p>
+<p>第四种 SAX实现方法：</p>
+<h5 id="Tomcat内部工作原理"><a href="#Tomcat内部工作原理" class="headerlink" title="Tomcat内部工作原理"></a>Tomcat内部工作原理</h5><p>Connector负责接受客户的请求并向客户返回响应，是Tomcat接收请求的入口，每个Connector有自己专属的监听端口, 在同一个Service中，多个Connector共享一个Engine。同一个Engine有多个Host,Engine负责处理Service内的所有请求。它接收来自Connector的请求，并决定传给哪个Host来处理，Host处理完请求后，将结果返回给Engine，Engine再将结果返回给Connector，同一个Host有多个Context</p>
+<h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><h5 id="Redis有哪些数据结构"><a href="#Redis有哪些数据结构" class="headerlink" title="Redis有哪些数据结构"></a>Redis有哪些数据结构</h5><p>字符串String、字典Hash、列表List、集合Set、有序集合SortedSet。</p>
+<h5 id="3-使用redis有哪些好处？"><a href="#3-使用redis有哪些好处？" class="headerlink" title="3.使用redis有哪些好处？"></a>3.使用redis有哪些好处？</h5><p>(1) <strong>速度快</strong>，因为数据存在内存中，类似于HashMap，HashMap的优势就是查找和操作的时间复杂度都是O(1)；<br>(2) <strong>支持丰富数据类型</strong>，支持string，list，set，sorted set，hash；<br>(3) <strong>支持事务</strong>，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行；<br>(4) <strong>丰富的特性</strong>：可用于缓存，消息，按key设置过期时间，过期后将会自动删除；</p>
+<h5 id="Redis分布式锁"><a href="#Redis分布式锁" class="headerlink" title="Redis分布式锁"></a>Redis分布式锁</h5><p>分布式中的锁，通常不会是一个对象，而是一个唯一的数据，可以是商户的订单号，商户的编码，或者是一条数据的唯一主键等等。</p>
+<p>synchronized主要对于单个应用中，多线程的同步；</p>
+<p>而分布式锁对应的是多个应用，每个应用中都可能会处理相同的数据，所以需要对对个应用的数据进行同步，保证数据的一致性；</p>
+<p>分布式锁一般有三种实现方式：1. 数据库乐观锁；2. 基于Redis的分布式锁；3. 基于ZooKeeper的分布式锁。</p>
+<ul>
+<li>基于 DB 的唯一索引。</li>
+<li>基于 ZK 的临时有序节点。</li>
+<li>基于 Redis 的 <code>NX EX</code> 参数。</li>
+</ul>
+<p>向redis中添加一个key，添加的操作是原子性操作，key不存在才能添加成功；</p>
+<p>在redis实现的分布式锁中，我们需要强调以下几点，只有保证了以下几点，才可说是确保了锁的实现：</p>
+<ul>
+<li>高性能(加、解锁时高性能)</li>
+<li>可以使用阻塞锁与非阻塞锁。</li>
+<li>不能出现死锁。</li>
+<li>可用性(不能出现节点 down 掉后加锁失败)。</li>
+</ul>
+<p>利用 <code>Redis set key</code> 时的一个 NX 参数可以保证在这个 key 不存在的情况下写入成功。并且再加上 EX 参数可以让该 key 在超时之后自动删除。</p>
+<h4 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h4><p>Maven主要服务于<strong>基于Java平台的项目构建、依赖管理和项目信息管理</strong>…</p>
+<h5 id="Maven常见的依赖范围有哪些"><a href="#Maven常见的依赖范围有哪些" class="headerlink" title="Maven常见的依赖范围有哪些?"></a>Maven常见的依赖范围有哪些?</h5><p>compile:编译依赖，默认的依赖方式，在编译,测试,运行三个阶段都有效，典型地有spring-core等jar。<br>test:测试依赖，只在编译测试用例和运行测试用例有效，典型地有JUnit。<br>provided:对于编译和测试有效，不会打包进发布包中，典型的例子为servlet-api,一般的web工程运行时都使用容器的servlet-api。<br>runtime:只在运行测试用例和实际运行时有效，典型地是jdbc驱动jar包。<br>system: 不从maven仓库获取该jar,而是通过systemPath指定该jar的路径。<br>import: 用于一个dependencyManagement对另一个dependencyManagement的继承。</p>
+<h5 id="如何设置本地仓库和远程仓库"><a href="#如何设置本地仓库和远程仓库" class="headerlink" title="如何设置本地仓库和远程仓库"></a>如何设置本地仓库和远程仓库</h5><p>4.1 配置本地仓库</p>
+<p>​        用文本编辑器工具打开setting.xml文件，然后配置自定义地址：</p>
+<figure class="highlight dts"><table><tr><td class="code"><pre><span class="line"><span class="params">&lt;localRepository&gt;</span></span><br><span class="line"><span class="symbol">    F:</span>\DevInstall\yuxx-meven-libs</span><br><span class="line"><span class="params">&lt;/localRepository&gt;</span></span><br></pre></td></tr></table></figure>
+<p>4.2 配置远程仓库</p>
+<p>​        Maven默认的远程地址是：<a href="http://my.repository.com/repo/path" target="_blank" rel="noopener">http://my.repository.com/repo/path</a>，这个地址是国外网站，下载速度很慢，这里推荐我国阿里云的地址。</p>
+<p>用文本编辑器工具打开setting.xml文件：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus-aliyun<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>*<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>Nexus aliyun<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.aliyun.com/nexus/content/groups/public<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>排除依赖</p>
+<p> 将不需要依赖的传递依赖排除掉</p>
+<p>  在<dependency>标签中添加子标签<exclusions>和<exclusion>将某传递依赖的jar包排除掉</exclusion></exclusions></dependency></p>
+<p> 版本锁定（推荐使用）</p>
+<p>  直接指定所依赖的jar包版本。</p>
+<p>  使用<dependencymanagement>标签，在改标签中明确指定所依赖的jar包的版本。</dependencymanagement></p>
+<h5 id="java-常见的几种运行时异常RuntimeException"><a href="#java-常见的几种运行时异常RuntimeException" class="headerlink" title="java 常见的几种运行时异常RuntimeException"></a>java 常见的几种运行时异常RuntimeException</h5><p>常见的几种如下：</p>
+<p>NullPointerException - 空指针引用异常<br>ClassCastException - 类型强制转换异常。<br>IllegalArgumentException - 传递非法参数异常。<br>ArithmeticException - 算术运算异常<br>ArrayStoreException - 向数组中存放与声明类型不兼容对象异常<br>IndexOutOfBoundsException - 下标越界异常<br>NegativeArraySizeException - 创建一个大小为负数的数组错误异常<br>NumberFormatException - 数字格式异常<br>SecurityException - 安全异常<br>UnsupportedOperationException - 不支持的操作异常</p>
+<h5 id="重载与重写的区别"><a href="#重载与重写的区别" class="headerlink" title="重载与重写的区别"></a>重载与重写的区别</h5><p>方法重载是指同一个类中的多个方法具有相同的名字,但这些方法具有不同的参数列表,即参数的数量或参数类型不能完全相同    在方法的参数不同的情况下，方法的返回类型可以不相同。</p>
+<p>方法重写是存在子父类之间的,子类定义的方法与父类中的方法要求返回值、方法名和参数都相同。</p>
+<h5 id="ArrayList、LinkedList、Vector的区别"><a href="#ArrayList、LinkedList、Vector的区别" class="headerlink" title="ArrayList、LinkedList、Vector的区别"></a>ArrayList、LinkedList、Vector的区别</h5><p><strong>List的三个子类的特点</strong></p>
+<p><strong>ArrayList:</strong></p>
+<ul>
+<li>底层数据结构是数组，查询快，增删慢。</li>
+<li>线程不安全，效率高。</li>
+</ul>
+<p><strong>Vector:</strong></p>
+<ul>
+<li>底层数据结构是数组，查询快，增删慢。</li>
+<li>线程安全，效率低。</li>
+<li>Vector相对ArrayList查询慢(线程安全的)。</li>
+<li>Vector相对LinkedList增删慢(数组结构)。</li>
+</ul>
+<p><strong>LinkedList</strong></p>
+<ul>
+<li>底层数据结构是链表，查询慢，增删快。</li>
+<li>线程不安全，效率高。</li>
+</ul>
+<p><strong>Vector和ArrayList的区别</strong></p>
+<ul>
+<li>Vector是线程安全的,效率低。</li>
+<li>ArrayList是线程不安全的,效率高。</li>
+<li>共同点:底层数据结构都是数组实现的,查询快,增删慢。</li>
+</ul>
+<p><strong>ArrayList和LinkedList的区别</strong></p>
+<ul>
+<li>ArrayList底层是数组结果,查询和修改快。</li>
+<li>LinkedList底层是链表结构的,增和删比较快,查询和修改比较慢。</li>
+</ul>
+<p><strong>共同点:都是线程不安全的</strong></p>
+<p><strong>List有三个子类使用</strong></p>
+<ul>
+<li>查询多用ArrayList。</li>
+<li>增删多用LinkedList。</li>
+<li>如果都多ArrayList。</li>
+</ul>
+<h5 id="String、StringBuffer与StringBuilder的区别"><a href="#String、StringBuffer与StringBuilder的区别" class="headerlink" title="String、StringBuffer与StringBuilder的区别"></a>String、StringBuffer与StringBuilder的区别</h5><p>String：适用于少量的字符串操作的情况。 StringBuilder：适用于单线程下在字符缓冲区进行大量操作的情况。 StringBuffer：适用多线程下在字符缓冲区进行大量操作的情况。 StringBuilder：是线程不安全的，而StringBuffer是线程安全的。</p>
+<p>这三个类之间的区别主要是在两个方面，<strong>即运行速度和线程安全</strong>这两方面。 首先说运行速度，或者说是执行速度，在这方面运行速度快慢为：<strong>StringBuilder &gt; StringBuffer &gt; String</strong>。</p>
+<p>String最慢的原因</p>
+<p>String为字符串常量，而StringBuilder和StringBuffer均为字符串变量，即String对象一旦创建之后该对象是不可更改的，但后两者的对象是变量，是可以更改的。</p>
+<p>再来说线程安全</p>
+<p>在线程安全上，<strong>StringBuilder是线程不安全的，而StringBuffer是线程安全的</strong>。</p>
+<p>如果一个StringBuffer对象在字符串缓冲区被多个线程使用时，StringBuffer中很多方法可以带有synchronized关键字，所以可以保证线程是安全的，但StringBuilder的方法则没有该关键字，所以不能保证线程安全，有可能会出现一些错误的操作。所以如果要进行的操作是多线程的，那么就要使用StringBuffer，但是在单线程的情况下，还是建议使用速度比较快的StringBuilder。</p>
+<h5 id="Java内存分配策略"><a href="#Java内存分配策略" class="headerlink" title="Java内存分配策略"></a>Java内存分配策略</h5><p>堆内存、虚拟机栈、方法区、本地方法栈、程序计数器。</p>
+<p>静态分配—静态存储区（方法区）：主要存放静态数据，全局static</p>
+<p>栈式分配—栈区：当方法执行时，方法内部的局部变量都建立在栈内存中，并在方法结束后自动释放分配的内存。因为栈内存分配是在处理器的指令集当中所以效率很高，但是分配的内存容量有限。</p>
+<p><strong>在方法体内定义的（局部变量）一些基本类型的变量和对象的引用变量都在方法的栈内存中分配。</strong>当在一段方法块中定义一个变量时，Java就会在栈中为其分配内存，当超出变量作用域时，该变量也就无效了，此时占用的内存就会释放，然后会被重新利用。</p>
+<p>堆内存用来存放所有new出来的对象(包括该对象内的所有成员变量)和数组。</p>
+<p>堆式分配—堆区：Java堆是被所有线程所共享的一块内存区域，在虚拟机启动时创建，目的就是用来存放对象实例，几乎所有的对象都是在这里分配（但随着技术发展，“所有”不是那么绝对了）Java堆是垃圾收集器的主要管理区域，也叫“GC”堆。从内存回收的角度可以将Java堆分为“新生代”，“老年代”</p>
+<p>本地方法栈。本地方法栈为虚拟机使用到的Native方法服务。而JAVA的栈内存是为了保存我们编写的临时变量与对象引用。</p>
+<p>程序计数器。JAVA其实说到底也就是一条一条的指令。程序计数器个人理解也就是用来指示执行哪条指令的。每个线程都需要有自己独立的程序计数器，并且不能互相被干扰，否则就会影响到程序的正常执行次序。因此，可以这么说，程序计数器是每个线程所私有的。</p>
+<h5 id="ThreadLocal与Synchronized的区别"><a href="#ThreadLocal与Synchronized的区别" class="headerlink" title="ThreadLocal与Synchronized的区别"></a>ThreadLocal与Synchronized的区别</h5><p>​        ThreadLocal和Synchonized都用于解决多线程并发访问。但是ThreadLocal与synchronized有本质的区别。<strong>synchronized是利用锁的机制，使变量或代码块在某一时该只能被一个线程访问。而ThreadLocal为每一个线程都提供了变量的副本，这样就隔离了多个线程对数据的数据共享。而Synchronized却正好相反，它用于在多个线程间通信时能够获得数据共享。</strong></p>
+<p><strong>一句话，ThreadLocal用于数据隔离，而Synchronized用于数据共享。</strong></p>
+<p><strong>Synchronized用于线程间的数据共享（使变量或代码块在某一时该只能被一个线程访问），是一种以延长访问时间来换取线程安全性的策略；</strong></p>
+<p><strong>而ThreadLocal则用于线程间的数据隔离（为每一个线程都提供了变量的副本），是一种以空间来换取线程安全性的策略。</strong></p>
+<h5 id="在java方法中改变传递的参数的值"><a href="#在java方法中改变传递的参数的值" class="headerlink" title="在java方法中改变传递的参数的值"></a>在java方法中改变传递的参数的值</h5><p>1、对于基本类型参数，在方法体内对参数进行重新赋值，并不会改变原有变量的值。</p>
+<p>2、对于引用类型参数，在方法体内对参数进行重新赋予引用，并不会改变原有变量所持有的引用。 </p>
+<p>3、方法体内对参数进行运算，不影响原有变量的值。 </p>
+<p>4、方法体内对参数所指向对象的属性进行操作，将改变原有变量所指向对象的属性值。 </p>
+<h4 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h4><p>IO是指对数据流的输入和输出，也称为IO流，IO流主要分为两大类，字节流和字符流。字节流可以处理任何类型的数据，如图片，视频等，字符流只能处理字符类型的数据。</p>
+<p>IO流的本质是数据传输，并且流是单向的。</p>
+<p>1字符=2字节</p>
+]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>blog操作及具体指令</title>
     <url>/2019/03/13/blog%E6%93%8D%E4%BD%9C%E5%8F%8A%E5%85%B7%E4%BD%93%E6%8C%87%E4%BB%A4/</url>
-    <content><![CDATA[<p>那个文件太长了 新起一个文件 总结换电脑之后的命令操作和图片等问题 ,  还是有点麻烦的 所以记一下 win和linux一样的操作 但是vim不会用  编辑md 不太方便 所以切换到了windows</p>
+    <content><![CDATA[<p>那个文件太长了 新起一个文件 总结换电脑之后的命令操作和图片等问题 ,  还是有点麻烦的 所以记一下。</p>
+<a id="more"></a>
 <h3 id="图片添加方式"><a href="#图片添加方式" class="headerlink" title="图片添加方式"></a>图片添加方式</h3><figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">修改<span class="emphasis">_config.yml配置文件post_</span>asset_folder项为true。</span><br><span class="line">创建博客是使用命令创建：</span><br><span class="line">hexo new [layout] <span class="xml"><span class="tag">&lt;<span class="name">title</span>&gt;</span></span></span><br><span class="line">其中的layout项可以省略，例如：</span><br><span class="line">hexo new "这是一个新的博客"</span><br><span class="line">使用完命令之后，在source/_post文件夹里面就会出现一个“这是一个新的博客.md”的文件和一个“这是一个新的博客”的文件夹。</span><br><span class="line">安装插件</span><br><span class="line">npm install hexo-asset-image --save</span><br><span class="line">将想要上传的图片先扔到文件夹下，然后在博客中使用markdown的格式引入图片：</span><br><span class="line">![<span class="string">你想要输入的替代文字</span>](<span class="link">xxxx/图片名.jpg</span>)</span><br></pre></td></tr></table></figure>
 <h4 id="Typora设置如下"><a href="#Typora设置如下" class="headerlink" title="Typora设置如下"></a>Typora设置如下</h4><p><img src="/2019/03/13/blog操作及具体指令/1552463003251.png" alt="1552463003251"></p>
 <h3 id="本地搜索功能开启"><a href="#本地搜索功能开启" class="headerlink" title="本地搜索功能开启"></a>本地搜索功能开启</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">#添加插件</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-searchdb <span class="comment">--save</span></span><br><span class="line">修改blog下的_config.yml文件，进行编辑。</span><br><span class="line"><span class="keyword">search</span>:</span><br><span class="line">    <span class="keyword">path</span>: search.xml</span><br><span class="line">    <span class="keyword">field</span>: post</span><br><span class="line">    <span class="keyword">format</span>: html</span><br><span class="line">    <span class="keyword">limit</span>: <span class="number">10000</span></span><br><span class="line">    </span><br><span class="line">修改主题配置文件</span><br><span class="line">self_search: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 <h3 id="新设备命令"><a href="#新设备命令" class="headerlink" title="新设备命令"></a>新设备命令</h3><p>直接撸,打开我的电脑–&gt;d: –&gt;新建文件夹 (my_blog) –&gt;右键git bash</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">git clone -b blog_file https://github.com/ejeonline/ejeonline.github.io.git my_blog/</span><br><span class="line">npm <span class="keyword">install</span> hexo-cli -g</span><br><span class="line">cd my_blog</span><br><span class="line">npm <span class="keyword">install</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-deployer-git <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-renderer-pug <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-renderer-sass <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-asset-image <span class="comment">--save</span></span><br><span class="line">npm <span class="keyword">install</span> hexo-generator-searchdb <span class="comment">--save   #本地搜索功能插件</span></span><br><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo <span class="keyword">server</span></span><br><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">git</span> <span class="string">clone -b blog_file https://github.com/ejeonline/ejeonline.github.io.git my_blog/</span></span><br><span class="line"><span class="attr">npm</span> <span class="string">install hexo-cli -g</span></span><br><span class="line"><span class="attr">cd</span> <span class="string">my_blog</span></span><br><span class="line"><span class="attr">npm</span> <span class="string">install</span></span><br><span class="line"><span class="attr">npm</span> <span class="string">install hexo-deployer-git --save</span></span><br><span class="line"><span class="attr">npm</span> <span class="string">install hexo-renderer-pug --save</span></span><br><span class="line"><span class="attr">npm</span> <span class="string">install hexo-renderer-sass --save</span></span><br><span class="line"><span class="attr">npm</span> <span class="string">install hexo-asset-image --save</span></span><br><span class="line"><span class="attr">npm</span> <span class="string">install hexo-generator-searchdb --save   #本地搜索功能插件</span></span><br><span class="line"><span class="attr">hexo</span> <span class="string">clean</span></span><br><span class="line"><span class="attr">hexo</span> <span class="string">g</span></span><br><span class="line"><span class="attr">hexo</span> <span class="string">server</span></span><br><span class="line"><span class="attr">hexo</span> <span class="string">clean</span></span><br><span class="line"><span class="attr">hexo</span> <span class="string">g</span></span><br><span class="line"><span class="attr">hexo</span> <span class="string">d</span></span><br></pre></td></tr></table></figure>
 <h3 id="博客文件提交及日常使用"><a href="#博客文件提交及日常使用" class="headerlink" title="博客文件提交及日常使用"></a>博客文件提交及日常使用</h3><figure class="highlight elixir"><table><tr><td class="code"><pre><span class="line"><span class="comment">#查看分支</span></span><br><span class="line"><span class="variable">$ </span>git branch -a</span><br><span class="line">* blog_file  <span class="comment">#目前所在分支</span></span><br><span class="line">  remotes/origin/HEAD -&gt; origin/master</span><br><span class="line">  remotes/origin/blog_file</span><br><span class="line">  remotes/origin/master</span><br><span class="line"><span class="variable">$ </span>git pull   <span class="comment">#更新</span></span><br><span class="line"><span class="variable">$ </span>git status  <span class="comment">#状态</span></span><br><span class="line"><span class="variable">$ </span>git reset --hard  <span class="comment">#还原到默认版本</span></span><br><span class="line"><span class="variable">$ </span>git add --all <span class="comment">#添加文件</span></span><br><span class="line"><span class="variable">$ </span>git commit -m <span class="string">"提交源文件到分支"</span> 提交到本地仓库</span><br><span class="line"><span class="variable">$ </span>git push --set-upstream origin blog_file <span class="comment">#提交远程仓库</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重新发布</span></span><br><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
@@ -1160,13 +1351,13 @@
       </categories>
       <tags>
         <tag>环境搭建</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
     <title>hexo搭建</title>
     <url>/2019/03/13/hexo%E6%90%AD%E5%BB%BA/</url>
     <content><![CDATA[<h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p>Hexo 是一个非常流行的静态站点生成工具，它可以把 Markdown 文档快速的解析成漂亮的静态页面，支持各种主题，让用户专注在写作上。我们可以使用 Hexo + Github 搭建自己的博客（免费的），还可以绑定自己的域名。</p>
+<a id="more"></a>
 <h3 id="搭建步骤："><a href="#搭建步骤：" class="headerlink" title="搭建步骤："></a>搭建步骤：</h3><ol>
 <li>安装Git,Node.js,Hexo</li>
 <li>GitHub创建个人仓库</li>
@@ -1483,7 +1674,7 @@
 <p>参数    描述<br>layout    布局<br>title    标题<br>date    建立日期<br>updated    更新日期<br>comments    开启文章的评论功能<br>tags    标签（不适用于分页）<br>categories    分类（不适用于分页）<br>permalink    覆盖文章网址</p>
 </blockquote>
 <h4 id="layout（布局）"><a href="#layout（布局）" class="headerlink" title="layout（布局）"></a>layout（布局）</h4><p>当你每一次使用代码</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">hexo <span class="keyword">new</span> paper</span><br></pre></td></tr></table></figure>
+<figure class="highlight actionscript"><table><tr><td class="code"><pre><span class="line">hexo <span class="keyword">new</span> paper</span><br></pre></td></tr></table></figure>
 <p>它其实默认使用的是post这个布局，也就是在source文件夹下的_post里面。</p>
 <p>Hexo 有三种默认布局：post、page 和 draft，它们分别对应不同的路径，而您自定义的其他布局和 post 相同，都将储存到 source/_posts 文件夹。</p>
 <figure class="highlight routeros"><table><tr><td class="code"><pre><span class="line">布局	路径</span><br><span class="line">post	source/_posts</span><br><span class="line">page	source</span><br><span class="line">draft	source/_drafts</span><br></pre></td></tr></table></figure>
@@ -1571,176 +1762,12 @@
       </categories>
       <tags>
         <tag>环境搭建</tag>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java基础</title>
-    <url>/2019/03/13/Java%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<p>[TOC]</p>
-<h5 id="1-hashcode相等的两个类一定相等吗？equals呢？相反呢？"><a href="#1-hashcode相等的两个类一定相等吗？equals呢？相反呢？" class="headerlink" title="1.hashcode相等的两个类一定相等吗？equals呢？相反呢？"></a>1.hashcode相等的两个类一定相等吗？equals呢？相反呢？</h5><p>1.equal()相等的两个对象他们的hashCode()肯定相等，也就是用equal()对比是绝对可靠的。<br>2.hashCode()相等的两个对象他们的equal()不一定相等，也就是hashCode()不是绝对可靠的。<br>对于需要大量并且快速的对比的话如果都用equal()去做显然效率太低，所以解决方式是，每当需要对比的时候，首先用hashCode()去对比，如果hashCode()不一样，则表示这两个对象肯定不相等（也就是不必再用equal()去再对比了）,如果hashCode()相同，此时再对比他们的equal()，如果equal()也相同，则表示这两个对象是真的相同了，这样既能大大提高了效率也保证了对比的绝对正确性。</p>
-<h5 id="2-介绍一下集合框架"><a href="#2-介绍一下集合框架" class="headerlink" title="2.介绍一下集合框架"></a>2.介绍一下集合框架</h5><p>分为三块：List列表、Set集合、Map映射</p>
-<p><strong>Set、List和Map可以看做集合的三大类：</strong><br><strong>List集合是有序集合，集合中的元素可以重复，访问集合中的元素可以根据元素的索引来访问。</strong><br><strong>Set集合是无序集合，集合中的元素不可以重复，访问集合中的元素只能根据元素本身来访问（也是集合里元素不允许重复的原因）。</strong><br><strong>Map集合中保存Key-value对形式的元素，访问时只能根据每项元素的key来访问其value。</strong> </p>
-<p><strong>1.List接口</strong><br>List接口继承于Collection接口，它可以定义一个<strong>允许重复</strong>的<strong>有序集合</strong>。因为List中的元素是有序的，所以我们可以通过使用索引（元素在List中的位置，类似于数组下标）来访问List中的元素，这类似于Java的数组。</p>
-<p>List接口为Collection直接接口。List所代表的是<strong>有序的Collection</strong>，即它用某种特定的插入顺序来维护元素顺序。用户可以对列表中每个元素的插入位置进行精确地控制，同时可以根据元素的整数索引（在列表中的位置）访问元素，并搜索列表中的元素。实现List接口的集合主要有：ArrayList、LinkedList、Vector、Stack。</p>
-<p><strong>Map一种映射，用于储存关系型数据，保存着两种值，一组用于保存key,另一组用来保存value。并且key不允许重复。</strong><br><strong>HashMap底层就是一个数组，数组中根据存入的Key的HashCode决定存放位置，其Entry单元中有四个属性，分别为HashCode，Key，Vaule，和下一个Entry</strong>，这样就形成了一个链表，当HashMap中的另一个拥有相同的HashCode值的不同的Key存入时，会将原来的Entry赋到新Entry的属性中，然后形成Entry链，查询的时候先比较HashCode，如果相同且Key值相同则直接取出，如果HashCode相同Key值不同则继续顺着链表寻找直到寻找到相同的Key值。<br>TreeMap与HashMap的不同：表象上时TreeMap可以对Key进行排序，原因时TreeMap使用的时“红黑树”的二叉树结构储存Entry，也就是排序二叉树，左边恒放比此值小的数右边恒放比此值大的树，按照当前节点值与传入查询值的比较进行判断决定其存放位置/查询其数值；<br>Set集合：Set与Map可以手动的互相转换 Set转换Map只需要新建一个对象，对象中又key和value两个属性，新建一个类继承Set存储新建的对象即可实现。Map转换为Set只需要将Map的Value固定，只使用Key存储数据即可实现；<br>Table:Map的线程安全型号；</p>
-<h5 id="3-hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？"><a href="#3-hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？" class="headerlink" title="3.hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？"></a>3.hashmap，hashtable底层实现的区别，hashtable和concurrenthashtable呢？</h5><p>hashtable简单的理解就是hashmap的线程安全类 其方法大部分都相同只不过家了synchronize关键字保证其线程安全。其他的区别也有继承的接口不同这点。<br>concurrenthashtable则是改进了hashtable的效率，hashtable虽然安全但是不能多线程同时操作，concurrenthashtable使用了分块的模式支持多线程操作，且使用了lock替换synchronize来提高了效率。</p>
-<h5 id="4-hashmap与treemap的区别，底层数据结构是什么样的？"><a href="#4-hashmap与treemap的区别，底层数据结构是什么样的？" class="headerlink" title="4.hashmap与treemap的区别，底层数据结构是什么样的？"></a>4.hashmap与treemap的区别，底层数据结构是什么样的？</h5><p>HashMap：数组方式存储key/value，线程非安全，允许null作为key和value，key不可以重复，value允许重复，不保证元素迭代顺序是按照插入时的顺序，key的hash值是先计算key的hashcode值，然后再进行计算，每次容量扩容会重新计算所以key的hash值，会消耗资源，要求key必须重写equals和hashcode方法</p>
-<p>默认初始容量16，加载因子0.75，扩容为旧容量乘2，查找元素快，如果key一样则比较value，如果value不一样，则按照链表结构存储value，就是一个key后面有多个value；</p>
-<p>TreeMap：基于红黑二叉树的NavigableMap的实现，线程非安全，不允许null，key不可以重复，value允许重复，存入TreeMap的元素应当实现Comparable接口或者实现Comparator接口，会按照排序后的顺序迭代元素，两个相比较的key不得抛出classCastException。主要用于存入元素的时候对元素进行自动排序，迭代输出的时候就按排序顺序输出  </p>
-<h5 id="5-线程池用过么，都有什么参数？底层如何实现的？"><a href="#5-线程池用过么，都有什么参数？底层如何实现的？" class="headerlink" title="5.线程池用过么，都有什么参数？底层如何实现的？"></a>5.线程池用过么，都有什么参数？底层如何实现的？</h5><ol>
-<li>newSingleThreadExecutor</li>
-</ol>
-<p>创建一个单线程的线程池。这个线程池只有一个线程在工作，也就是相当于单线程串行执行所有任务。如果这个唯一的线程因为异常结束，那么会有一个新的线程来替代它。此线程池保证所有任务的执行顺序按照任务的提交顺序执行。</p>
-<p>2.newFixedThreadPool</p>
-<p>创建固定大小的线程池。每次提交一个任务就创建一个线程，直到线程达到线程池的最大大小。线程池的大小一旦达到最大值就会保持不变，如果某个线程因为执行异常而结束，那么线程池会补充一个新线程。</p>
-<ol start="3">
-<li>newCachedThreadPool</li>
-</ol>
-<p>创建一个可缓存的线程池。如果线程池的大小超过了处理任务所需要的线程，那么就会回收部分空闲（60秒不执行任务）的线程，当任务数增加时，此线程池又可以智能的添加新线程来处理任务。此线程池不会对线程池大小做限制，线程池大小完全依赖于操作系统（或者说JVM）能够创建的最大线程大小。</p>
-<p>4.newScheduledThreadPool</p>
-<p>创建一个大小无限的线程池。此线程池支持定时以及周期性执行任务的需求。</p>
-<p>线程池：<br>1、线程是稀缺资源，使用线程池可以减少创建和销毁线程的次数，每个工作线程都可以重复使用。<br>2、可以根据系统的承受能力，调整线程池中工作线程的数量，防止因为消耗过多内存导致服务器崩溃。<br>参数： </p>
-<p>一般来说，非CPU密集型的业务（加解密、压缩解压缩、搜索排序等业务是CPU密集型的业务），瓶颈都在后端数据库，本地CPU计算的时间很少，所以设置几十或者几百个工作线程也都是可能的。</p>
-<p>N核服务器，通过执行业务的单线程分析出本地计算时间为x，等待时间为y，则工作线程数（线程池线程数）设置为 N*(x+y)/x，能让CPU的利用率最大化。</p>
-<p>corePoolSize - 池中所保存的线程数，包括空闲线程。</p>
-<p>maximumPoolSize-池中允许的最大线程数。</p>
-<p>keepAliveTime - 当线程数大于核心时，此为终止前多余的空闲线程等待新任务的最长时间。</p>
-<p>unit - keepAliveTime 参数的时间单位。</p>
-<p>workQueue - 执行前用于保持任务的队列。此队列仅保持由 execute方法提交的 Runnable任务。</p>
-<p>threadFactory - 执行程序创建新线程时使用的工厂。</p>
-<p>handler - 由于超出线程范围和队列容量而使执行被阻塞时所使用的处理程序。</p>
-<p>底层核心实现为封装一层线程类work，在运行的时候再执行完自己的线程后主动去队列中拿取下一条线程去执行。</p>
-<h5 id="Thread-类中的start-和-run-方法有什么区别？"><a href="#Thread-类中的start-和-run-方法有什么区别？" class="headerlink" title="Thread 类中的start() 和 run() 方法有什么区别？"></a>Thread 类中的start() 和 run() 方法有什么区别？</h5><p>这个问题经常被问到，但还是能从此区分出面试者对Java线程模型的理解程度。start()方法被用来启动新创建的线程，而且start()内部调用了run()方法，这和直接调用run()方法的效果不一样。当你调用run()方法的时候，只会是在原来的线程中调用，没有新的线程启动，start()方法才会启动新线程。</p>
-<h5 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h5><p>RPC就是从一台机器（客户端）上通过参数传递的方式调用另一台机器（服务器）上的一个函数或方法（可以统称为服务）并得到返回的结果。</p>
-<p>RPC会隐藏底层的通讯细节（不需要直接处理Socket通讯或Http通讯）。</p>
-<p>客户端发起请求，服务器返回响应（类似于Http的工作方式）RPC在使用形式上像调用本地函数（或方法）一样去调用远程的函数（或方法）。</p>
-<p>客户端把参数先转成一个字节流，传给服务端后，再把字节流转成自己能读取的格式。这个过程叫序列化和反序列化。</p>
-<p>RPC 调用分以下两种：</p>
-<ol>
-<li>同步调用<br>客户方等待调用执行完成并返回结果。</li>
-<li>异步调用<br>客户方调用后不用等待执行结果返回，但依然可以通过回调通知等方式获取返回结果。 若客户方不关心调用返回结果，则变成单向异步调用，单向调用不用返回结果。</li>
-</ol>
-<p>异步和同步的区分在于是否等待服务端执行完成并返回结果。</p>
-<h5 id="java读取xml文件的四种方法"><a href="#java读取xml文件的四种方法" class="headerlink" title="java读取xml文件的四种方法"></a>java读取xml文件的四种方法</h5><p>第一种 DOM 实现方法：</p>
-<p>第二种 DOM4J实现方法</p>
-<p>第三种 JDOM实现方法：</p>
-<p>第四种 SAX实现方法：</p>
-<h5 id="Tomcat内部工作原理"><a href="#Tomcat内部工作原理" class="headerlink" title="Tomcat内部工作原理"></a>Tomcat内部工作原理</h5><p>Connector负责接受客户的请求并向客户返回响应，是Tomcat接收请求的入口，每个Connector有自己专属的监听端口, 在同一个Service中，多个Connector共享一个Engine。同一个Engine有多个Host,Engine负责处理Service内的所有请求。它接收来自Connector的请求，并决定传给哪个Host来处理，Host处理完请求后，将结果返回给Engine，Engine再将结果返回给Connector，同一个Host有多个Context</p>
-<h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><h5 id="Redis有哪些数据结构"><a href="#Redis有哪些数据结构" class="headerlink" title="Redis有哪些数据结构"></a>Redis有哪些数据结构</h5><p>字符串String、字典Hash、列表List、集合Set、有序集合SortedSet。</p>
-<h5 id="3-使用redis有哪些好处？"><a href="#3-使用redis有哪些好处？" class="headerlink" title="3.使用redis有哪些好处？"></a>3.使用redis有哪些好处？</h5><p>(1) <strong>速度快</strong>，因为数据存在内存中，类似于HashMap，HashMap的优势就是查找和操作的时间复杂度都是O(1)；<br>(2) <strong>支持丰富数据类型</strong>，支持string，list，set，sorted set，hash；<br>(3) <strong>支持事务</strong>，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行；<br>(4) <strong>丰富的特性</strong>：可用于缓存，消息，按key设置过期时间，过期后将会自动删除；</p>
-<h5 id="Redis分布式锁"><a href="#Redis分布式锁" class="headerlink" title="Redis分布式锁"></a>Redis分布式锁</h5><p>分布式中的锁，通常不会是一个对象，而是一个唯一的数据，可以是商户的订单号，商户的编码，或者是一条数据的唯一主键等等。</p>
-<p>synchronized主要对于单个应用中，多线程的同步；</p>
-<p>而分布式锁对应的是多个应用，每个应用中都可能会处理相同的数据，所以需要对对个应用的数据进行同步，保证数据的一致性；</p>
-<p>分布式锁一般有三种实现方式：1. 数据库乐观锁；2. 基于Redis的分布式锁；3. 基于ZooKeeper的分布式锁。</p>
-<ul>
-<li>基于 DB 的唯一索引。</li>
-<li>基于 ZK 的临时有序节点。</li>
-<li>基于 Redis 的 <code>NX EX</code> 参数。</li>
-</ul>
-<p>向redis中添加一个key，添加的操作是原子性操作，key不存在才能添加成功；</p>
-<p>在redis实现的分布式锁中，我们需要强调以下几点，只有保证了以下几点，才可说是确保了锁的实现：</p>
-<ul>
-<li>高性能(加、解锁时高性能)</li>
-<li>可以使用阻塞锁与非阻塞锁。</li>
-<li>不能出现死锁。</li>
-<li>可用性(不能出现节点 down 掉后加锁失败)。</li>
-</ul>
-<p>利用 <code>Redis set key</code> 时的一个 NX 参数可以保证在这个 key 不存在的情况下写入成功。并且再加上 EX 参数可以让该 key 在超时之后自动删除。</p>
-<h4 id="Maven"><a href="#Maven" class="headerlink" title="Maven"></a>Maven</h4><p>Maven主要服务于<strong>基于Java平台的项目构建、依赖管理和项目信息管理</strong>…</p>
-<h5 id="Maven常见的依赖范围有哪些"><a href="#Maven常见的依赖范围有哪些" class="headerlink" title="Maven常见的依赖范围有哪些?"></a>Maven常见的依赖范围有哪些?</h5><p>compile:编译依赖，默认的依赖方式，在编译,测试,运行三个阶段都有效，典型地有spring-core等jar。<br>test:测试依赖，只在编译测试用例和运行测试用例有效，典型地有JUnit。<br>provided:对于编译和测试有效，不会打包进发布包中，典型的例子为servlet-api,一般的web工程运行时都使用容器的servlet-api。<br>runtime:只在运行测试用例和实际运行时有效，典型地是jdbc驱动jar包。<br>system: 不从maven仓库获取该jar,而是通过systemPath指定该jar的路径。<br>import: 用于一个dependencyManagement对另一个dependencyManagement的继承。</p>
-<h5 id="如何设置本地仓库和远程仓库"><a href="#如何设置本地仓库和远程仓库" class="headerlink" title="如何设置本地仓库和远程仓库"></a>如何设置本地仓库和远程仓库</h5><p>4.1 配置本地仓库</p>
-<p>​        用文本编辑器工具打开setting.xml文件，然后配置自定义地址：</p>
-<figure class="highlight dts"><table><tr><td class="code"><pre><span class="line"><span class="params">&lt;localRepository&gt;</span></span><br><span class="line"><span class="symbol">    F:</span>\DevInstall\yuxx-meven-libs</span><br><span class="line"><span class="params">&lt;/localRepository&gt;</span></span><br></pre></td></tr></table></figure>
-<p>4.2 配置远程仓库</p>
-<p>​        Maven默认的远程地址是：<a href="http://my.repository.com/repo/path" target="_blank" rel="noopener">http://my.repository.com/repo/path</a>，这个地址是国外网站，下载速度很慢，这里推荐我国阿里云的地址。</p>
-<p>用文本编辑器工具打开setting.xml文件：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mirrors</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mirror</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>nexus-aliyun<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">mirrorOf</span>&gt;</span>*<span class="tag">&lt;/<span class="name">mirrorOf</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>Nexus aliyun<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://maven.aliyun.com/nexus/content/groups/public<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">mirror</span>&gt;</span> </span><br><span class="line">  <span class="tag">&lt;/<span class="name">mirrors</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>排除依赖</p>
-<p> 将不需要依赖的传递依赖排除掉</p>
-<p>  在<dependency>标签中添加子标签<exclusions>和<exclusion>将某传递依赖的jar包排除掉</exclusion></exclusions></dependency></p>
-<p> 版本锁定（推荐使用）</p>
-<p>  直接指定所依赖的jar包版本。</p>
-<p>  使用<dependencymanagement>标签，在改标签中明确指定所依赖的jar包的版本。</dependencymanagement></p>
-<h5 id="java-常见的几种运行时异常RuntimeException"><a href="#java-常见的几种运行时异常RuntimeException" class="headerlink" title="java 常见的几种运行时异常RuntimeException"></a>java 常见的几种运行时异常RuntimeException</h5><p>常见的几种如下：</p>
-<p>NullPointerException - 空指针引用异常<br>ClassCastException - 类型强制转换异常。<br>IllegalArgumentException - 传递非法参数异常。<br>ArithmeticException - 算术运算异常<br>ArrayStoreException - 向数组中存放与声明类型不兼容对象异常<br>IndexOutOfBoundsException - 下标越界异常<br>NegativeArraySizeException - 创建一个大小为负数的数组错误异常<br>NumberFormatException - 数字格式异常<br>SecurityException - 安全异常<br>UnsupportedOperationException - 不支持的操作异常</p>
-<h5 id="重载与重写的区别"><a href="#重载与重写的区别" class="headerlink" title="重载与重写的区别"></a>重载与重写的区别</h5><p>方法重载是指同一个类中的多个方法具有相同的名字,但这些方法具有不同的参数列表,即参数的数量或参数类型不能完全相同    在方法的参数不同的情况下，方法的返回类型可以不相同。</p>
-<p>方法重写是存在子父类之间的,子类定义的方法与父类中的方法要求返回值、方法名和参数都相同。</p>
-<h5 id="ArrayList、LinkedList、Vector的区别"><a href="#ArrayList、LinkedList、Vector的区别" class="headerlink" title="ArrayList、LinkedList、Vector的区别"></a>ArrayList、LinkedList、Vector的区别</h5><p><strong>List的三个子类的特点</strong></p>
-<p><strong>ArrayList:</strong></p>
-<ul>
-<li>底层数据结构是数组，查询快，增删慢。</li>
-<li>线程不安全，效率高。</li>
-</ul>
-<p><strong>Vector:</strong></p>
-<ul>
-<li>底层数据结构是数组，查询快，增删慢。</li>
-<li>线程安全，效率低。</li>
-<li>Vector相对ArrayList查询慢(线程安全的)。</li>
-<li>Vector相对LinkedList增删慢(数组结构)。</li>
-</ul>
-<p><strong>LinkedList</strong></p>
-<ul>
-<li>底层数据结构是链表，查询慢，增删快。</li>
-<li>线程不安全，效率高。</li>
-</ul>
-<p><strong>Vector和ArrayList的区别</strong></p>
-<ul>
-<li>Vector是线程安全的,效率低。</li>
-<li>ArrayList是线程不安全的,效率高。</li>
-<li>共同点:底层数据结构都是数组实现的,查询快,增删慢。</li>
-</ul>
-<p><strong>ArrayList和LinkedList的区别</strong></p>
-<ul>
-<li>ArrayList底层是数组结果,查询和修改快。</li>
-<li>LinkedList底层是链表结构的,增和删比较快,查询和修改比较慢。</li>
-</ul>
-<p><strong>共同点:都是线程不安全的</strong></p>
-<p><strong>List有三个子类使用</strong></p>
-<ul>
-<li>查询多用ArrayList。</li>
-<li>增删多用LinkedList。</li>
-<li>如果都多ArrayList。</li>
-</ul>
-<h5 id="String、StringBuffer与StringBuilder的区别"><a href="#String、StringBuffer与StringBuilder的区别" class="headerlink" title="String、StringBuffer与StringBuilder的区别"></a>String、StringBuffer与StringBuilder的区别</h5><p>String：适用于少量的字符串操作的情况。 StringBuilder：适用于单线程下在字符缓冲区进行大量操作的情况。 StringBuffer：适用多线程下在字符缓冲区进行大量操作的情况。 StringBuilder：是线程不安全的，而StringBuffer是线程安全的。</p>
-<p>这三个类之间的区别主要是在两个方面，<strong>即运行速度和线程安全</strong>这两方面。 首先说运行速度，或者说是执行速度，在这方面运行速度快慢为：<strong>StringBuilder &gt; StringBuffer &gt; String</strong>。</p>
-<p>String最慢的原因</p>
-<p>String为字符串常量，而StringBuilder和StringBuffer均为字符串变量，即String对象一旦创建之后该对象是不可更改的，但后两者的对象是变量，是可以更改的。</p>
-<p>再来说线程安全</p>
-<p>在线程安全上，<strong>StringBuilder是线程不安全的，而StringBuffer是线程安全的</strong>。</p>
-<p>如果一个StringBuffer对象在字符串缓冲区被多个线程使用时，StringBuffer中很多方法可以带有synchronized关键字，所以可以保证线程是安全的，但StringBuilder的方法则没有该关键字，所以不能保证线程安全，有可能会出现一些错误的操作。所以如果要进行的操作是多线程的，那么就要使用StringBuffer，但是在单线程的情况下，还是建议使用速度比较快的StringBuilder。</p>
-<h5 id="Java内存分配策略"><a href="#Java内存分配策略" class="headerlink" title="Java内存分配策略"></a>Java内存分配策略</h5><p>堆内存、虚拟机栈、方法区、本地方法栈、程序计数器。</p>
-<p>静态分配—静态存储区（方法区）：主要存放静态数据，全局static</p>
-<p>栈式分配—栈区：当方法执行时，方法内部的局部变量都建立在栈内存中，并在方法结束后自动释放分配的内存。因为栈内存分配是在处理器的指令集当中所以效率很高，但是分配的内存容量有限。</p>
-<p><strong>在方法体内定义的（局部变量）一些基本类型的变量和对象的引用变量都在方法的栈内存中分配。</strong>当在一段方法块中定义一个变量时，Java就会在栈中为其分配内存，当超出变量作用域时，该变量也就无效了，此时占用的内存就会释放，然后会被重新利用。</p>
-<p>堆内存用来存放所有new出来的对象(包括该对象内的所有成员变量)和数组。</p>
-<p>堆式分配—堆区：Java堆是被所有线程所共享的一块内存区域，在虚拟机启动时创建，目的就是用来存放对象实例，几乎所有的对象都是在这里分配（但随着技术发展，“所有”不是那么绝对了）Java堆是垃圾收集器的主要管理区域，也叫“GC”堆。从内存回收的角度可以将Java堆分为“新生代”，“老年代”</p>
-<p>本地方法栈。本地方法栈为虚拟机使用到的Native方法服务。而JAVA的栈内存是为了保存我们编写的临时变量与对象引用。</p>
-<p>程序计数器。JAVA其实说到底也就是一条一条的指令。程序计数器个人理解也就是用来指示执行哪条指令的。每个线程都需要有自己独立的程序计数器，并且不能互相被干扰，否则就会影响到程序的正常执行次序。因此，可以这么说，程序计数器是每个线程所私有的。</p>
-<h5 id="ThreadLocal与Synchronized的区别"><a href="#ThreadLocal与Synchronized的区别" class="headerlink" title="ThreadLocal与Synchronized的区别"></a>ThreadLocal与Synchronized的区别</h5><p>​        ThreadLocal和Synchonized都用于解决多线程并发访问。但是ThreadLocal与synchronized有本质的区别。<strong>synchronized是利用锁的机制，使变量或代码块在某一时该只能被一个线程访问。而ThreadLocal为每一个线程都提供了变量的副本，这样就隔离了多个线程对数据的数据共享。而Synchronized却正好相反，它用于在多个线程间通信时能够获得数据共享。</strong></p>
-<p><strong>一句话，ThreadLocal用于数据隔离，而Synchronized用于数据共享。</strong></p>
-<p><strong>Synchronized用于线程间的数据共享（使变量或代码块在某一时该只能被一个线程访问），是一种以延长访问时间来换取线程安全性的策略；</strong></p>
-<p><strong>而ThreadLocal则用于线程间的数据隔离（为每一个线程都提供了变量的副本），是一种以空间来换取线程安全性的策略。</strong></p>
-<h5 id="在java方法中改变传递的参数的值"><a href="#在java方法中改变传递的参数的值" class="headerlink" title="在java方法中改变传递的参数的值"></a>在java方法中改变传递的参数的值</h5><p>1、对于基本类型参数，在方法体内对参数进行重新赋值，并不会改变原有变量的值。</p>
-<p>2、对于引用类型参数，在方法体内对参数进行重新赋予引用，并不会改变原有变量所持有的引用。 </p>
-<p>3、方法体内对参数进行运算，不影响原有变量的值。 </p>
-<p>4、方法体内对参数所指向对象的属性进行操作，将改变原有变量所指向对象的属性值。 </p>
-<h4 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h4><p>IO是指对数据流的输入和输出，也称为IO流，IO流主要分为两大类，字节流和字符流。字节流可以处理任何类型的数据，如图片，视频等，字符流只能处理字符类型的数据。</p>
-<p>IO流的本质是数据传输，并且流是单向的。</p>
-<p>1字符=2字节</p>
-]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>面试</tag>
       </tags>
   </entry>
   <entry>
     <title>Java基础(一)</title>
     <url>/2019/03/12/Java%E5%9F%BA%E7%A1%80(%E4%B8%80)/</url>
-    <content><![CDATA[<p>[TOC]</p>
+    <content><![CDATA[<a id="more"></a>
 <h4 id="基础问题"><a href="#基础问题" class="headerlink" title="基础问题"></a>基础问题</h4><h5 id="1-hashcode相等两个类一定相等吗？equals呢？相反呢？"><a href="#1-hashcode相等两个类一定相等吗？equals呢？相反呢？" class="headerlink" title="1.hashcode相等两个类一定相等吗？equals呢？相反呢？"></a>1.hashcode相等两个类一定相等吗？equals呢？相反呢？</h5><p>重写过 hashcode 和 equals 么，为什么重写equals时必须重写hashCode方法？equals和hashCode都是Object对象中的非final方法，它们设计的目的就是被用来覆盖(override)的，所以在程序设计中还是经常需要处理这两个方法。</p>
 <h5 id="2-集合框架"><a href="#2-集合框架" class="headerlink" title="2.集合框架"></a>2.集合框架</h5><p>Java集合框架下大致可以分为五个部分：List列表、Set集合、Map映射、迭代器（Iterator、Enumeration）、工具类（Arrays、Collections）。</p>
 <p>Java集合类的整体框架如下：<img src="/2019/03/12/Java基础(一)/Java基础(一" alt="img">/4676229-f093fafe4fc63713.png)</p>
@@ -2009,7 +2036,8 @@
   <entry>
     <title>RabbitMQ面试</title>
     <url>/2019/03/12/RabbitMQ%E9%9D%A2%E8%AF%95/</url>
-    <content><![CDATA[<h5 id="使用RabbitMQ有什么好处？"><a href="#使用RabbitMQ有什么好处？" class="headerlink" title="使用RabbitMQ有什么好处？"></a>使用RabbitMQ有什么好处？</h5><ul>
+    <content><![CDATA[<a id="more"></a>
+<h5 id="使用RabbitMQ有什么好处？"><a href="#使用RabbitMQ有什么好处？" class="headerlink" title="使用RabbitMQ有什么好处？"></a>使用RabbitMQ有什么好处？</h5><ul>
 <li>应用解耦（系统拆分）</li>
 <li>异步处理（预约挂号业务处理成功后，异步发送短信、推送消息、日志记录等）</li>
 <li>消息分发</li>
@@ -2031,7 +2059,7 @@
 <p>（1）生产者丢数据<br>从生产者弄丢数据这个角度来看，RabbitMQ提供transaction和confirm模式来确保生产者不丢消息。</p>
 <p>transaction机制就是说，发送消息前，开启事务（channel.txSelect()）,然后发送消息，如果发送过程中出现什么异常，事务就会回滚（channel.txRollback()）,如果发送成功则提交事务（channel.txCommit()）。</p>
 <p>然而，这种方式有个缺点：吞吐量下降。因为，按照经验，生产上用confirm模式的居多。一旦channel进入confirm模式，所有在该信道上发布的消息都将会被指派一个唯一的ID（从1开始），一旦消息被投递到所有匹配的队列之后，rabbitMQ就会发送一个ACK给生产者（包含消息的唯一ID），这就使得生产者知道消息已经正确到达目的队列了。如果rabbitMQ没能处理该消息，则会发送一个Nack消息给你，你可以进行重试操作。处理Ack和Nack的代码如下所示：</p>
-<figure class="highlight aspectj"><table><tr><td class="code"><pre><span class="line">channel.addConfirmListener(<span class="keyword">new</span> ConfirmListener() &#123;  </span><br><span class="line">                <span class="meta">@Override</span>  </span><br><span class="line">                <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">handleNack</span><span class="params">(<span class="keyword">long</span> deliveryTag, <span class="keyword">boolean</span> multiple)</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">                    System.out.println(<span class="string">"nack: deliveryTag = "</span>+deliveryTag+<span class="string">" multiple: "</span>+multiple);  </span><br><span class="line">                &#125;  </span><br><span class="line">                <span class="meta">@Override</span>  </span><br><span class="line">                <span class="keyword">public</span> <span class="function"><span class="keyword">void</span> <span class="title">handleAck</span><span class="params">(<span class="keyword">long</span> deliveryTag, <span class="keyword">boolean</span> multiple)</span> <span class="keyword">throws</span> IOException </span>&#123;  </span><br><span class="line">                    System.out.println(<span class="string">"ack: deliveryTag = "</span>+deliveryTag+<span class="string">" multiple: "</span>+multiple);  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight reasonml"><table><tr><td class="code"><pre><span class="line">channel.add<span class="constructor">ConfirmListener(<span class="params">new</span> ConfirmListener()</span> &#123;  </span><br><span class="line">                @Override  </span><br><span class="line">                public void handle<span class="constructor">Nack(<span class="params">long</span> <span class="params">deliveryTag</span>, <span class="params">boolean</span> <span class="params">multiple</span>)</span> throws IOException &#123;  </span><br><span class="line">                    <span class="module-access"><span class="module"><span class="identifier">System</span>.</span></span>out.println(<span class="string">"nack: deliveryTag = "</span>+deliveryTag+<span class="string">" multiple: "</span>+multiple);  </span><br><span class="line">                &#125;  </span><br><span class="line">                @Override  </span><br><span class="line">                public void handle<span class="constructor">Ack(<span class="params">long</span> <span class="params">deliveryTag</span>, <span class="params">boolean</span> <span class="params">multiple</span>)</span> throws IOException &#123;  </span><br><span class="line">                    <span class="module-access"><span class="module"><span class="identifier">System</span>.</span></span>out.println(<span class="string">"ack: deliveryTag = "</span>+deliveryTag+<span class="string">" multiple: "</span>+multiple);  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;);</span><br></pre></td></tr></table></figure>
 <p>(2)消息队列丢数据</p>
 <p>处理消息队列丢数据的情况，一般是开启持久化磁盘的配置。这个持久化配置可以和confirm机制配合使用，你可以在消息持久化磁盘后，再给生产者发送一个Ack信号。这样，如果消息持久化磁盘之前，rabbitMQ阵亡了，那么生产者收不到Ack信号，生产者会自动重发。</p>
 <p>那么如何持久化呢，这里顺便说一下吧，其实也很容易，就下面两步</p>
@@ -2054,7 +2082,8 @@
   <entry>
     <title>pinpoint搭建流程</title>
     <url>/2019/03/12/pinpoint%E6%90%AD%E5%BB%BA%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h3><p>​    pinpoint是开源在github上的一款APM监控工具，它是用Java编写的，用于大规模分布式系统监控。它对性能的影响最小（只增加约3％资源利用率），安装agent是无侵入式的，只需要在被测试的Tomcat中加上3句话，打下探针，就可以监控整套程序了。因需求要获取阿里云专有云组件之间的联系，了解到了这个开源项目。我们知道,前端向后台发起一个查询请求，后台服务可能要调用多个服务，每个服务可能又会调用其它服务，最终将结果返回，汇总到页面上。如果某个环节发生异常，工程师很难准确定位这个问题到底是由哪个服务调用造成的，Pinpoint等相关工具的作用就是<strong>追踪每个请求的完整调用链路，收集调用链路上每个服务的性能数据</strong>，方便工程师能够快速定位问题。</p>
+    <content><![CDATA[<a id="more"></a>
+<h3 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h3><p>​    pinpoint是开源在github上的一款APM监控工具，它是用Java编写的，用于大规模分布式系统监控。它对性能的影响最小（只增加约3％资源利用率），安装agent是无侵入式的，只需要在被测试的Tomcat中加上3句话，打下探针，就可以监控整套程序了。因需求要获取阿里云专有云组件之间的联系，了解到了这个开源项目。我们知道,前端向后台发起一个查询请求，后台服务可能要调用多个服务，每个服务可能又会调用其它服务，最终将结果返回，汇总到页面上。如果某个环节发生异常，工程师很难准确定位这个问题到底是由哪个服务调用造成的，Pinpoint等相关工具的作用就是<strong>追踪每个请求的完整调用链路，收集调用链路上每个服务的性能数据</strong>，方便工程师能够快速定位问题。</p>
 <p>​    这个是一个Pinpoint框架结构图 emm。。。看了概述之后这个图还算比较直观 大概意思就是探针agent通过jvm收集应用端监控数据，反馈给collector，collector属于数据收集模块，接收Agent发送过来的监控数据，并存储到HBase，再通过Web UI 监控展示模块，展示系统调用关系、调用详情、应用状态等，并支持报警等功能。</p>
 <p>架构说明：</p>
 <ul>
@@ -2177,7 +2206,6 @@
       </categories>
       <tags>
         <tag>环境搭建</tag>
-        <tag>pinpoint</tag>
       </tags>
   </entry>
   <entry>
@@ -2185,7 +2213,8 @@
     <url>/2019/03/12/EFK%E9%83%A8%E7%BD%B2-%E5%8D%95%E6%9C%BA/</url>
     <content><![CDATA[<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h2><p>EFK不是一个软件，而是一套解决方案，并且都是开源软件，之间互相配合使用，完美衔接，高效的满足了很多场合的应用，是目前主流的一种日志系统。EFK是三个开源软件的缩写，分别表示：Elasticsearch , FileBeat, Kibana , 其中ELasticsearch负责日志保存和搜索，FileBeat负责收集日志，Kibana 负责界面,当然EFK和ELK只有一个区别，那就是EFK把ELK的Logstash替换成了FileBeat，因为Filebeat相对于Logstash来说有2个好处：</p>
 <p>1、侵入低，无需修改程序目前任何代码和配置<br>2、相对于Logstash来说性能高，Logstash对于IO占用很大</p>
-<p>当然FileBeat也并不是完全好过Logstash，毕竟Logstash对于日志的格式化这些相对FileBeat好很多，FileBeat只是将日志从日志文件中读取出来，当然如果你日志本身是有一定格式的，FileBeat也可以格式化，但是相对于Logstash来说，还是差一点</p>
+<p>当然FileBeat也并不是完全好过Logstash，毕竟Logstash对于日志的格式化这些相对FileBeat好很多，FileBeat只是将日志从日志文件中读取出来，当然如果你日志本身是有一定格式的，FileBeat也可以格式化，但是相对于Logstash来说，还是差一点。</p>
+<a id="more"></a>
 <p><strong>Elasticsearch</strong></p>
 <p>Elasticsearch是个开源分布式搜索引擎，提供搜集、分析、存储数据三大功能。它的特点有：分布式，零配置，自动发现，索引自动分片，索引副本机制，restful风格接口，多数据源，自动搜索负载等。</p>
 <p><strong>FileBeat</strong></p>
@@ -2206,20 +2235,20 @@
 <h2 id="4-安装elasticsearch"><a href="#4-安装elasticsearch" class="headerlink" title="4.安装elasticsearch"></a>4.安装elasticsearch</h2><p>我这里新建了一个文件夹去管理EFK</p>
 <h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">├── efk</span><br><span class="line">│   ├── elasticsearch-<span class="number">6.5</span>.<span class="number">1</span></span><br><span class="line">│   │   ├── bin</span><br><span class="line">│   │   ├── config</span><br><span class="line">│   │   ├── data</span><br><span class="line">│   │   ├── lib</span><br><span class="line">│   │   ├── LICENSE.txt</span><br><span class="line">│   │   ├── logs</span><br><span class="line">│   │   ├── modules</span><br><span class="line">│   │   ├── NOTICE.txt</span><br><span class="line">│   │   ├── plugins</span><br><span class="line">│   │   └── README.textile</span><br><span class="line">│   ├── filebeat-<span class="number">6.5</span>.<span class="number">1</span>-linux-x86_64</span><br><span class="line">│   │   ├── data</span><br><span class="line">│   │   ├── fields.yml</span><br><span class="line">│   │   ├── filebeat</span><br><span class="line">│   │   ├── filebeat<span class="selector-class">.reference</span><span class="selector-class">.yml</span></span><br><span class="line">│   │   ├── filebeat.yml</span><br><span class="line">│   │   ├── kibana</span><br><span class="line">│   │   ├── LICENSE.txt</span><br><span class="line">│   │   ├── logs</span><br><span class="line">│   │   ├── module</span><br><span class="line">│   │   ├── modules.d</span><br><span class="line">│   │   ├── NOTICE.txt</span><br><span class="line">│   │   └── README.md</span><br><span class="line">│   ├── kibana-<span class="number">6.5</span>.<span class="number">1</span>-linux-x86_64</span><br><span class="line">│   │   ├── bin</span><br><span class="line">│   │   ├── config</span><br><span class="line">│   │   ├── data</span><br><span class="line">│   │   ├── LICENSE.txt</span><br><span class="line">│   │   ├── logs</span><br><span class="line">│   │   ├── node</span><br><span class="line">│   │   ├── node_modules</span><br><span class="line">│   │   ├── NOTICE.txt</span><br><span class="line">│   │   ├── optimize</span><br><span class="line">│   │   ├── package.json</span><br><span class="line">│   │   ├── plugins</span><br><span class="line">│   │   ├── README.txt</span><br><span class="line">│   │   ├── src</span><br><span class="line">│   │   └── webpackShims</span><br><span class="line">└── testlog</span><br><span class="line">    ├── <span class="selector-tag">a</span>.out</span><br><span class="line">    └── catalina.<span class="number">2018</span>-<span class="number">11</span>-<span class="number">28</span>.log</span><br></pre></td></tr></table></figure>
 <h3 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h3><p>由于Elasticsearch不能使用root用户打开，所以需要专门创建一个用户来启动Elasticsearch并赋予权限</p>
-<figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">groupadd efk</span><br><span class="line"></span><br><span class="line">useradd efk -g efk -<span class="selector-tag">p</span> efk</span><br><span class="line"></span><br><span class="line">chown -R efk:efk EFK</span><br></pre></td></tr></table></figure>
-<h3 id="创建data数据目录和日志目录"><a href="#创建data数据目录和日志目录" class="headerlink" title="创建data数据目录和日志目录"></a>创建data数据目录和日志目录</h3><figure class="highlight stata"><table><tr><td class="code"><pre><span class="line"><span class="keyword">su</span> efk</span><br><span class="line"></span><br><span class="line"><span class="keyword">mkdir</span> data/esdata </span><br><span class="line"></span><br><span class="line"><span class="keyword">mkdir</span> alllogs/eslog</span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">groupadd</span> <span class="string">efk</span></span><br><span class="line"></span><br><span class="line"><span class="attr">useradd</span> <span class="string">efk -g efk -p efk</span></span><br><span class="line"></span><br><span class="line"><span class="attr">chown</span> <span class="string">-R efk:efk EFK</span></span><br></pre></td></tr></table></figure>
+<h3 id="创建data数据目录和日志目录"><a href="#创建data数据目录和日志目录" class="headerlink" title="创建data数据目录和日志目录"></a>创建data数据目录和日志目录</h3><figure class="highlight properties"><table><tr><td class="code"><pre><span class="line"><span class="attr">su</span> <span class="string">efk</span></span><br><span class="line"></span><br><span class="line"><span class="attr">mkdir</span> <span class="string">data/esdata </span></span><br><span class="line"></span><br><span class="line"><span class="attr">mkdir</span> <span class="string">alllogs/eslog</span></span><br></pre></td></tr></table></figure>
 <h3 id="解压elasticsearch"><a href="#解压elasticsearch" class="headerlink" title="解压elasticsearch"></a>解压elasticsearch</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-xzvf</span> <span class="selector-tag">elasticsearch-6</span><span class="selector-class">.5</span><span class="selector-class">.1</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
 <p>进入elasticsearch主目录</p>
 <figure class="highlight arduino"><table><tr><td class="code"><pre><span class="line">vim <span class="built_in">config</span>/elasticsearch.yml</span><br></pre></td></tr></table></figure>
 <p>因为是单机 所以只配了下面几个属性</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">http.<span class="string">port:</span> <span class="number">9200</span></span><br><span class="line">path.<span class="string">data:</span> <span class="regexp">/myproject/</span>efk<span class="regexp">/elasticsearch-6.5.1/</span>data</span><br><span class="line">path.<span class="string">logs:</span> <span class="regexp">/myproject/</span>efk<span class="regexp">/elasticsearch-6.5.1/</span>logs</span><br><span class="line">network.<span class="string">host:</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">http.port: <span class="number">9200</span></span><br><span class="line">path.data: /myproject/efk/elasticsearch<span class="number">-6.5</span><span class="number">.1</span>/data</span><br><span class="line">path.logs: /myproject/efk/elasticsearch<span class="number">-6.5</span><span class="number">.1</span>/logs</span><br><span class="line">network.host: <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span></span><br></pre></td></tr></table></figure>
 <h3 id="elasticsearch控制台中文乱码和jvm大小调节乱码问题"><a href="#elasticsearch控制台中文乱码和jvm大小调节乱码问题" class="headerlink" title="elasticsearch控制台中文乱码和jvm大小调节乱码问题"></a>elasticsearch控制台中文乱码和jvm大小调节乱码问题</h3><p>修改conf下面的jvm.options如下</p>
 <figure class="highlight ldif"><table><tr><td class="code"><pre><span class="line"><span class="literal">-Xms256m</span></span><br><span class="line"><span class="literal">-Xmx256m</span></span><br><span class="line"><span class="comment"># ensure UTF-8 encoding by default (e.g. filenames)</span></span><br><span class="line"><span class="comment">#-Dfile.encoding=UTF-8</span></span><br><span class="line"><span class="literal">-Dfile.encoding=GBK</span></span><br></pre></td></tr></table></figure>
 <h3 id="es主要配置说明"><a href="#es主要配置说明" class="headerlink" title="es主要配置说明"></a>es主要配置说明</h3><figure class="highlight crmsh"><table><tr><td class="code"><pre><span class="line"><span class="comment">#集群主节点名称</span></span><br><span class="line"></span><br><span class="line">cluster.name: mymaster   </span><br><span class="line"></span><br><span class="line"><span class="keyword">node</span>.name:<span class="title"> es-1</span></span><br><span class="line"></span><br><span class="line"> <span class="comment"># 是否为master</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">node</span>.master:<span class="title"> true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 是否为数据节点</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">node</span>.data:<span class="title"> true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据目录</span></span><br><span class="line"></span><br><span class="line">path.data: /myproject/efk/elasticsearch-<span class="number">6.5</span>.<span class="number">1</span>/data</span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志目录</span></span><br><span class="line"></span><br><span class="line">path.logs: /myproject/efk/elasticsearch-<span class="number">6.5</span>.<span class="number">1</span>/logs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 本机IP</span></span><br><span class="line"></span><br><span class="line">network.host: <span class="number">0.0</span>.<span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 本机http端口</span></span><br><span class="line"></span><br><span class="line">http.port: <span class="number">9200</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定集群中的节点中有几个有master资格的节点</span></span><br><span class="line"></span><br><span class="line">discovery.zen.minimum_master_nodes: <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定集群中其他节点的IP</span></span><br><span class="line"></span><br><span class="line">discovery.zen.ping.unicast.hosts: [<span class="string">"10.168.1.44"</span>,<span class="string">"10.168.0.126"</span>,<span class="string">"10.168.0.127"</span>,<span class="string">"10.168.0.128"</span>,<span class="string">"10.168.0.130"</span>]</span><br></pre></td></tr></table></figure>
 <h3 id="启动Elasticsearch"><a href="#启动Elasticsearch" class="headerlink" title="启动Elasticsearch"></a>启动Elasticsearch</h3><figure class="highlight awk"><table><tr><td class="code"><pre><span class="line">.<span class="regexp">/bin/</span>elasticsearch</span><br></pre></td></tr></table></figure>
 <h3 id="后台启动"><a href="#后台启动" class="headerlink" title="后台启动"></a>后台启动</h3><figure class="highlight jboss-cli"><table><tr><td class="code"><pre><span class="line"><span class="string">./elasticsearch</span> -d</span><br></pre></td></tr></table></figure>
 <h3 id="查找ES进程"><a href="#查找ES进程" class="headerlink" title="查找ES进程"></a>查找ES进程</h3><figure class="highlight vim"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ps</span> -ef | <span class="keyword">grep</span> elastic</span><br></pre></td></tr></table></figure>
-<h3 id="杀掉ES进程"><a href="#杀掉ES进程" class="headerlink" title="杀掉ES进程"></a>杀掉ES进程</h3><figure class="highlight lsl"><table><tr><td class="code"><pre><span class="line">kill <span class="number">-9</span> <span class="number">2382</span>（进程号）</span><br></pre></td></tr></table></figure>
+<h3 id="杀掉ES进程"><a href="#杀掉ES进程" class="headerlink" title="杀掉ES进程"></a>杀掉ES进程</h3><figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">kill <span class="number">-9</span> <span class="number">2382</span>（进程号）</span><br></pre></td></tr></table></figure>
 <h3 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h3><p>如果遇到错误：max file descriptors [65535] for elasticsearch process is too low, increase to at least [65536]</p>
 <p>vi /etc/security/limits.conf  </p>
 <p>如果有 <em> soft nofile 65535 </em> hard nofile 65535 则将65535修改为65536，如果没有则在后面添加，注意此处的65535对应descriptors [65535]中的65535，修改后的值65536对应increase to at least [65536]，所以当提示不一致时，需要根据具体的错误提示具体修改</p>
@@ -2230,7 +2259,7 @@
 <p>并执行命令</p>
 <figure class="highlight ebnf"><table><tr><td class="code"><pre><span class="line"><span class="attribute">sysctl -p</span></span><br></pre></td></tr></table></figure>
 <p>以上2个修改需要在root用户权限修改，如果是使用xshell开两个窗口的话修改完成之后一定要断开重新登录一下，启动成功用执行命令</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">curl</span> 127<span class="selector-class">.0</span><span class="selector-class">.0</span><span class="selector-class">.1</span><span class="selector-pseudo">:9200</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">curl <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">9200</span></span><br></pre></td></tr></table></figure>
 <p>会得到类似以下json</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"name"</span> : <span class="string">"JEBFbUB"</span>,</span><br><span class="line">  <span class="attr">"cluster_name"</span> : <span class="string">"elasticsearch"</span>,</span><br><span class="line">  <span class="attr">"cluster_uuid"</span> : <span class="string">"tDw_Tk9rSyevhkazjbVa0Q"</span>,</span><br><span class="line">  <span class="attr">"version"</span> : &#123;</span><br><span class="line">    <span class="attr">"number"</span> : <span class="string">"6.5.1"</span>,</span><br><span class="line">    <span class="attr">"build_flavor"</span> : <span class="string">"default"</span>,</span><br><span class="line">    <span class="attr">"build_type"</span> : <span class="string">"tar"</span>,</span><br><span class="line">    <span class="attr">"build_hash"</span> : <span class="string">"8c58350"</span>,</span><br><span class="line">    <span class="attr">"build_date"</span> : <span class="string">"2018-11-16T02:22:42.182257Z"</span>,</span><br><span class="line">    <span class="attr">"build_snapshot"</span> : <span class="literal">false</span>,</span><br><span class="line">    <span class="attr">"lucene_version"</span> : <span class="string">"7.5.0"</span>,</span><br><span class="line">    <span class="attr">"minimum_wire_compatibility_version"</span> : <span class="string">"5.6.0"</span>,</span><br><span class="line">    <span class="attr">"minimum_index_compatibility_version"</span> : <span class="string">"5.0.0"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"tagline"</span> : <span class="string">"You Know, for Search"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="5-安装kibana"><a href="#5-安装kibana" class="headerlink" title="5.安装kibana"></a>5.安装kibana</h2><h3 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-xzvf</span> <span class="selector-tag">kibana-6</span><span class="selector-class">.5</span><span class="selector-class">.1-linux-x86_64</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
@@ -2240,7 +2269,7 @@
 <h3 id="如果外网不能访问-开放端口号"><a href="#如果外网不能访问-开放端口号" class="headerlink" title="如果外网不能访问,开放端口号"></a>如果外网不能访问,开放端口号</h3><figure class="highlight routeros"><table><tr><td class="code"><pre><span class="line">firewall-cmd <span class="attribute">--zone</span>=public <span class="attribute">--query-port</span>=80/tcp</span><br><span class="line"><span class="comment">#查看5601是否占用</span></span><br><span class="line">firewall-cmd <span class="attribute">--zone</span>=public <span class="attribute">--query-port</span>=5601/tcp</span><br><span class="line"><span class="comment">#添加5601</span></span><br><span class="line">firewall-cmd <span class="attribute">--zone</span>=public <span class="attribute">--add-port</span>=5601/tcp --permanent</span><br><span class="line"><span class="comment">#重载</span></span><br><span class="line">firewall-cmd --reload</span><br><span class="line"><span class="comment">#再次查看5601是否占用</span></span><br><span class="line">firewall-cmd <span class="attribute">--zone</span>=public <span class="attribute">--query-port</span>=5601/tcp</span><br></pre></td></tr></table></figure>
 <h3 id="后台启动-1"><a href="#后台启动-1" class="headerlink" title="后台启动"></a>后台启动</h3><figure class="highlight 1c"><table><tr><td class="code"><pre><span class="line">nohup ./bin/kibana &gt; logs/kibana.<span class="built_in">log</span> <span class="meta">&amp;</span></span><br></pre></td></tr></table></figure>
 <h3 id="查找ES进程-1"><a href="#查找ES进程-1" class="headerlink" title="查找ES进程"></a>查找ES进程</h3><figure class="highlight crmsh"><table><tr><td class="code"><pre><span class="line">ps -ef | grep <span class="keyword">node</span><span class="title"></span></span><br></pre></td></tr></table></figure>
-<h3 id="杀掉ES进程-1"><a href="#杀掉ES进程-1" class="headerlink" title="杀掉ES进程"></a>杀掉ES进程</h3><figure class="highlight lsl"><table><tr><td class="code"><pre><span class="line">kill <span class="number">-9</span> <span class="number">2382</span></span><br></pre></td></tr></table></figure>
+<h3 id="杀掉ES进程-1"><a href="#杀掉ES进程-1" class="headerlink" title="杀掉ES进程"></a>杀掉ES进程</h3><figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">kill <span class="number">-9</span> <span class="number">2382</span></span><br></pre></td></tr></table></figure>
 <h3 id="外网访问"><a href="#外网访问" class="headerlink" title="外网访问"></a>外网访问</h3><p><a href="http://10.146.247.161:8080" target="_blank" rel="noopener">http://10.146.247.161:8080</a></p>
 <h2 id="6-FileBeat安装"><a href="#6-FileBeat安装" class="headerlink" title="6. FileBeat安装"></a>6. FileBeat安装</h2><h3 id="解压-1"><a href="#解压-1" class="headerlink" title="解压"></a>解压</h3><figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-tag">tar</span> <span class="selector-tag">-xzvf</span> <span class="selector-tag">filebeat-6</span><span class="selector-class">.5</span><span class="selector-class">.1-linux-x86_64</span><span class="selector-class">.tar</span><span class="selector-class">.gz</span></span><br></pre></td></tr></table></figure>
 <h3 id="配置-1"><a href="#配置-1" class="headerlink" title="配置"></a>配置</h3><figure class="highlight vim"><table><tr><td class="code"><pre><span class="line"><span class="keyword">vim</span> filebeat.yml</span><br><span class="line">filebeat.<span class="built_in">input</span><span class="variable">s:</span></span><br><span class="line">- <span class="built_in">type</span>: <span class="built_in">log</span></span><br><span class="line">  enabled: true  #默认此处为false  要改成true才会生效 </span><br><span class="line">  path<span class="variable">s:</span></span><br><span class="line">    - /myproject/testlog/*.<span class="built_in">log</span></span><br><span class="line">    - /myproject/testlog/*.out</span><br><span class="line">  multiline.pattern: ^\[</span><br><span class="line">  multiline.negate: true</span><br><span class="line">  multiline.<span class="keyword">match</span>: after</span><br><span class="line">setup.kiban<span class="variable">a:</span></span><br><span class="line">  hos<span class="variable">t:</span> <span class="string">"127.0.0.1:5601"</span></span><br><span class="line">output.elasticsearch:</span><br><span class="line">  host<span class="variable">s:</span> [<span class="string">"127.0.0.1:9200"</span>]</span><br></pre></td></tr></table></figure>
@@ -2269,7 +2298,7 @@
 <p>测试filebeat启动后，查看相关输出信息：</p>
 <p>./filebeat -e -c filebeat.yml -d “publish”</p>
 <h3 id="后台方式启动filebeat："><a href="#后台方式启动filebeat：" class="headerlink" title="后台方式启动filebeat："></a>后台方式启动filebeat：</h3><figure class="highlight stylus"><table><tr><td class="code"><pre><span class="line">nohup ./filebeat -e -c filebeat<span class="selector-class">.yml</span> &gt; logs/filebeat<span class="selector-class">.out</span> &amp;</span><br></pre></td></tr></table></figure>
-<h3 id="查找进程ID并kill掉："><a href="#查找进程ID并kill掉：" class="headerlink" title="查找进程ID并kill掉："></a>查找进程ID并kill掉：</h3><figure class="highlight lsl"><table><tr><td class="code"><pre><span class="line">ps -ef |grep filebeat</span><br><span class="line">kill <span class="number">-9</span> <span class="number">2233</span></span><br></pre></td></tr></table></figure>
+<h3 id="查找进程ID并kill掉："><a href="#查找进程ID并kill掉：" class="headerlink" title="查找进程ID并kill掉："></a>查找进程ID并kill掉：</h3><figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">ps -ef |grep filebeat</span><br><span class="line">kill <span class="number">-9</span> <span class="number">2233</span></span><br></pre></td></tr></table></figure>
 <p>/usr/local/filebeat/filebeat.yml为filebeat 的配置文件地址，需要根据实际情况修改，启动后FileBeat就会自动收集日志了</p>
 <h2 id="7-配置Kibana"><a href="#7-配置Kibana" class="headerlink" title="7.配置Kibana"></a>7.配置Kibana</h2><p>进入 <a href="http://10.146.247.161:8080" target="_blank" rel="noopener">http://10.146.247.161:8080</a></p>
 <p>点击Management进入配置</p>
@@ -2293,7 +2322,6 @@
       <tags>
         <tag>环境搭建</tag>
         <tag>EFK</tag>
-        <tag>ElasticSearch</tag>
       </tags>
   </entry>
 </search>
