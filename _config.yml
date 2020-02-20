@@ -88,7 +88,7 @@ search:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://gitee.com/LeoJ/blog.git
+  repo: https://gitee.com/ejeonline/blog.git
   branch: master
 
 jsonContent:
