@@ -50,6 +50,10 @@ Cannot connect to the Docker daemon at tcp://ip:2375. Is the docker daemon runni
 
 ???  我启动了啊 防火墙看了一下也是关的，为了确认 专门上腾讯云设置了一下安全组
 
+
+
+
+
 ![1579600570283](一键部署springboot项目到docker/1579600570283.png)
 
 然后跟着网上各种方法试，没办法了 重装 重整 。配置完之后还是不行，抱着试一试的态度看了一下防火墙
