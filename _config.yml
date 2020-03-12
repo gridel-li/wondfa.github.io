@@ -13,7 +13,7 @@ timezone: Asia/Shanghai #中国时区
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://ejeonline.gitee.io/blog
+url: https://ejeonline.gitee.io
 root: /blog
 permalink: :year/:month/:day/:title/
 permalink_defaults:
