@@ -2,10 +2,10 @@
 title: RabbitMQ面试
 date: 2019-03-12 16:39:47
 tags:
-  - 面试
+  - 基础
 toc: true
 categories:
-  - 面试
+  - 基础
 comments: true
 ---
 
