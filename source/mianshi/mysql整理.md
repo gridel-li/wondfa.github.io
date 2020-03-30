@@ -10,7 +10,7 @@ categories:
 comments: true
 ---
 
-<!--more-->
+
 
 ## 什么是数据库？
 
@@ -21,6 +21,8 @@ comments: true
 我们也可以将数据存储在文件中，但是在文件中读写数据速度相对较慢。
 
 所以，现在我们使用关系型数据库管理系统（RDBMS）来存储和管理的大数据量。所谓的关系型数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。
+
+<!--more-->
 
 RDBMS 即关系数据库管理系统(Relational Database Management System)的特点：
 
