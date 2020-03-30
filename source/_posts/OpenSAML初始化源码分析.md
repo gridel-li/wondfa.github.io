@@ -43,7 +43,7 @@ SPI 全称为 (`Service Provider Interface`) ,是JDK内置的一种服务提供�
 
 该静态方法就是使用 `SPI` 加载 `Initializer` 的实现类，我们首先来看 `Initializer` 接口，这个接口就是 `SPI` 中的 `I`，也就是 `Interface`。通过下图可以看到该接口的所有实现类：
 
-![OpenSAML Initializer](saml源码分析/201874-opensaml-initializer-impls.png)
+![OpenSAML Initializer](OpenSAML初始化源码分析/201874-opensaml-initializer-impls.png)
 
 ### `SPI` 加载代码
 
@@ -83,7 +83,7 @@ org.opensaml.saml.config.impl.XMLObjectProviderInitializer
 org.opensaml.saml.config.impl.SAMLConfigurationInitializer
 ```
 
-[![enter description here](saml源码分析/201871-diffrent-package-SPI-different.png)](https://www.github.com/xmeng1/images/raw/master/images/201871-diffrent-package-SPI-different.png)
+[![enter description here](OpenSAML初始化源码分析/201871-diffrent-package-SPI-different.png)](https://www.github.com/xmeng1/images/raw/master/images/201871-diffrent-package-SPI-different.png)
 
 另外我们还需要注意一点，`SPI` 的配置是可以累加的，比如我们可以看到 `core` 模块中为了测试 `SPI` 机制，同样也定义了一个配置文件: `\java-opensaml\opensaml-core\src\test\resources\META-INF\services\org.opensaml.core.config.Initializer`。通过执行测试用例 `InitializationServiceTest`，发现这些配置的实现类也同样会被加载 （一共加载了4个实现类），所以这里 `SPI` 的配置是可以在包内叠加的。
 
@@ -271,7 +271,7 @@ public static <T extends Object> T get(@Nonnull final Class<T> configClass) {
 
 在 `ConfigurationService` 类中，有一个 `getPartitionName()` 的方法，这个方法首先获取一个 `configProperties`，该对象是 `Properties` 类型，然后从这个 `HashTable` 中找到 `PROPERTY_PARTITION_NAME` 键对应的值，如果没有就是默认值： `DEFAULT_PARTITION_NAME` （就是 `default`）。而这个 `configProperties` 是通过方法 `getConfigurationProperties()` 方法获得，该方法通过 `SPI` 机制，获取 `ConfigurationPropertiesSource` 接口的实现类，然后从中获取配置。注意这里是和前面的 `Initializer` 接口不同的另外一个接口。在 `OpenSAML` 中这个接口的实现类不同，只有这几个：
 
-[![ConfigurationPropertiesSource](saml源码分析/201878-opensaml-ConfigurationPropertiesSource.png)](https://www.github.com/xmeng1/images/raw/master/images/201878-opensaml-ConfigurationPropertiesSource.png)
+[![ConfigurationPropertiesSource](OpenSAML初始化源码分析/201878-opensaml-ConfigurationPropertiesSource.png)](https://www.github.com/xmeng1/images/raw/master/images/201878-opensaml-ConfigurationPropertiesSource.png)
 
 所以基本在我们使用的类中，这个 `partition` 都是 `default`，所以后面的分析我们将所有的 `partition` 都假设就是 `default`。
 
@@ -424,7 +424,7 @@ protected void initializeObjectProviders(final Element objectProviders) throws X
 
 另外这里还需要注意，如果我们尝试搜索某个具体的 `Builder` 比如 `AuthnRequestBuilder` 的使用情况，发现只在配置文件中引用了，这很奇怪，因为如果要测试这个 `Builder` 肯定应该有地方获取了这个类的实例。
 
-[![AbstractSAMLObjectBuilder](saml源码分析/201878-AbstractSAMLObjectBuilder.png)](https://www.github.com/xmeng1/images/raw/master/images/201878-AbstractSAMLObjectBuilder.png)
+[![AbstractSAMLObjectBuilder](OpenSAML初始化源码分析/201878-AbstractSAMLObjectBuilder.png)](https://www.github.com/xmeng1/images/raw/master/images/201878-AbstractSAMLObjectBuilder.png)
 
 这时候如果我们查看一下类的结构，可以发现这里定义了好几层抽象，所以在使用中利用 Java 的泛型，配合抽象 `SAMLObjectBuilder` 和 `SAMLObject` 的类型来实例。
 
