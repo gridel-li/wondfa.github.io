@@ -15,6 +15,8 @@ comments: true
 
 有这样一个业务情况 : 数据源信息配置。数据源是数据库的类型，如mysql ,oracle, sqlserver等，如果我要从根据名称判断可能会有很多if else 
 
+<!--more-->
+
 ```java
 if(a){	
     //dosomething

@@ -91,19 +91,19 @@ systemctl unmask firewalld
 通过接口获取所有的镜像:
 
 ```
-curl 'http://192.168.18.54:2375/images/json?all=0'| python -m json.tool 
+curl 'http://111.231.110.198:2375/images/json?all=0'| python -m json.tool 
 ```
 
 查看已经启动的容器信息：
 
 ```
-curl http://192.168.18.54:2375/containers/json |python -m json.tool 
+curl http://111.231.110.198:2375/containers/json |python -m json.tool 
 ```
 
 获取指定容器的具体信息：
 
 ```
-curl -X GET 'http://192.168.18.54:2375/containers/e37e50e73bd4/json'|python -m json.tool 
+curl -X GET 'http://111.231.110.198:2375/containers/e37e50e73bd4/json'|python -m json.tool 
 ```
 
 启动指定容器：【此处使用容器别名】
