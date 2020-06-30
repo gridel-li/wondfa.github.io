@@ -2,6 +2,13 @@
 title: 理解SAML流程
 date: 2020-03-18 14:06:23
 tags:
+  - Java
+  - 单点登录
+toc: true
+categories:
+  - Java
+  - 单点登录
+comments: true
 ---
 
 # 理解 SAML 流程
